@@ -1,18 +1,18 @@
 namespace Models;
 
-public class Pelicula{
+public class Peliculas{
 
-    public int IdPelicula{get; set;}
+    public string IdPelicula{get; set;}
     public string Titulo {get; set;}
     public string Sinopsis {get; set;}    
     public string Duracion {get; set;}
     public string Categoria {get; set;}
-    public double Director {get; set;}
-    public double Anio {get; set;}
+    public string Director {get; set;}
+    public DateTime Anio {get; set;}
     public string ImagenURL {get; set;}
-    public string Puntuacion {get; set;}
+    public double Puntuacion {get; set;}
 
-    public Pelicula(int idPelicula, string titulo, string sinopsis, string duracion, string categoria, double director, double anio, string imagenURL, string puntuacion){
+    public Peliculas(string idPelicula, string titulo, string sinopsis, string duracion, string categoria, string director, DateTime anio, string imagenURL, double puntuacion){
 
         IdPelicula = idPelicula;
         Titulo = titulo;
