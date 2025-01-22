@@ -1,4 +1,13 @@
+using Cinema.Controllers;
+using Cinema.Repositories;
+
 var builder = WebApplication.CreateBuilder(args);
+var connectionString = builder.Configuration.GetConnectionString("cinema");
+
+builder.Services.AddScoped<IUsuariosRepository, UsuariosRepository>(provider =>
+new UsuariosRepository(connectionString));
+
+
 
 // Add services to the container.
 
@@ -22,4 +31,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+
+
+//PlatoPrincipalController.InicializarDatos();
 app.Run();
