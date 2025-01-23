@@ -23,5 +23,59 @@ namespace Cinema.Controllers
             var usuarios = await _repository.GetAllAsync();
             return Ok(usuarios);
         }
+
+
+                [HttpGet("{id}")]
+        public async Task<ActionResult<Usuarios>> GetUsuario(int id)
+        {
+            var usuario = await _repository.GetByIdAsync(id);
+            if (usuario == null)
+            {
+                return NotFound();
+            }
+            return Ok(usuario);
+        }
+
+
+        [HttpPost]
+        public async Task<ActionResult<Usuarios>> CreateUsuario(Usuarios usuarios)
+        {
+            await _repository.AddAsync(usuarios);
+            return CreatedAtAction(nameof(CreateUsuario), new { id = usuarios.IdUsuario }, usuarios);
+        }
+
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateUsuario(int id, Usuarios updatedUsuarios)
+        {
+            var existingUsuario = await _repository.GetByIdAsync(id);
+            if (existingUsuario == null)
+            {
+                return NotFound();
+            }
+
+            existingUsuario.Nombre = updatedUsuarios.Nombre;
+            existingUsuario.Email = updatedUsuarios.Email;
+            existingUsuario.Password = updatedUsuarios.Password;
+            existingUsuario.FechaRegistro = updatedUsuarios.FechaRegistro;
+
+            await _repository.UpdateAsync(existingUsuario);
+            return NoContent();
+        }
+
+                [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteUsuario(int id)
+        {
+            var usuario = await _repository.GetByIdAsync(id);
+            if (usuario == null)
+            {
+                return NotFound();
+            }
+            await _repository.DeleteAsync(id);
+            return NoContent();
+
+
+
+        }
    }
 }
