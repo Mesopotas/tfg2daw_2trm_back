@@ -9,7 +9,7 @@ CREATE TABLE Usuarios (
     nombre VARCHAR(50) NOT NULL,
     email VARCHAR(50) NOT NULL UNIQUE,
     password VARCHAR(50) NOT NULL,
-    fechaRegistro DATETIME NOT NULL
+    fechaRegistro DATETIME NOT NULL DEFAULT GETDATE()
 );
 
 INSERT INTO Usuarios (nombre, email, password, fechaRegistro)
