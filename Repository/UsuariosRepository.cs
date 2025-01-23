@@ -52,7 +52,7 @@ namespace Cinema.Repositories
             {
                 await connection.OpenAsync();
 
-                string query = "SELECT idUsuario, nombre, email, password, fechaRegistro FROM Usuarios WHERE Id = @Id";
+                string query = "SELECT idUsuario, nombre, email, password, fechaRegistro FROM Usuarios WHERE idUsuario = @Id";
                 using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@Id", id);
@@ -120,7 +120,7 @@ namespace Cinema.Repositories
             {
                 await connection.OpenAsync();
 
-                string query = "DELETE FROM Usuarios WHERE Id = @Id";
+                string query = "DELETE FROM Usuarios WHERE idUsuario = @Id";
                 using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@Id", id);
