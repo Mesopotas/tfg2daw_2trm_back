@@ -8,6 +8,9 @@ var connectionString = builder.Configuration.GetConnectionString("cinema");
 builder.Services.AddScoped<IUsuariosRepository, UsuariosRepository>(provider =>
 new UsuariosRepository(connectionString));
 
+builder.Services.AddScoped<IPeliculaRepository, PeliculasRepository>(provider =>
+new PeliculasRepository(connectionString));
+
 // Add services to the container.
 builder.Services.AddControllers();
 
@@ -17,6 +20,8 @@ builder.Services.AddSwaggerGen();
 
 //Add services
 builder.Services.AddScoped<IUsuariosService, UsuariosService>();
+builder.Services.AddScoped<IPeliculaService, PeliculaService>();
+
 
 var app = builder.Build();
 

@@ -7,12 +7,12 @@ using Cinema.Service;
 using Models;
 
 namespace Cinema.Service
-{
-    public class PeliculaService : IPeliculaService
-    {
-        private readonly IPeliculaService _peliculaRepository;
 
-        public PeliculaService(IPeliculaService peliculaRepository)
+{ public class PeliculaService : IPeliculaService
+    {
+        private readonly IPeliculaRepository _peliculaRepository;
+
+        public PeliculaService(IPeliculaRepository peliculaRepository)
         {
             _peliculaRepository = peliculaRepository;
         }
@@ -49,7 +49,6 @@ namespace Cinema.Service
         
         public async Task InicializarDatosAsync()
         {
-            await _peliculaRepository.InicializarDatosAsync();
         }
 
       
