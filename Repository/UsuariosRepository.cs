@@ -76,7 +76,7 @@ namespace Cinema.Repositories
             return usuario;
         }
 
-        public async Task AddAsync(Usuarios Usuario)
+        public async Task AddAsync(Usuarios usuario)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
@@ -85,9 +85,9 @@ namespace Cinema.Repositories
                 string query = "INSERT INTO Usuarios (nombre, email, password) VALUES (@Nombre, @Email, @Password)";
                 using (var command = new SqlCommand(query, connection))
                 {
-                    command.Parameters.AddWithValue("@Nombre", Usuario.Nombre);
-                    command.Parameters.AddWithValue("@Email", Usuario.Email);
-                    command.Parameters.AddWithValue("@Password", Usuario.Password);
+                    command.Parameters.AddWithValue("@Nombre", usuario.Nombre);
+                    command.Parameters.AddWithValue("@Email", usuario.Email);
+                    command.Parameters.AddWithValue("@Password", usuario.Password);
 
                     await command.ExecuteNonQueryAsync();
                 }
