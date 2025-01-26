@@ -20,3 +20,19 @@ VALUES ('María López', 'maria.lopez@example.com', 'securePass456', GETDATE());
 
 INSERT INTO Usuarios (nombre, email, password, fechaRegistro)
 VALUES ('Luis Gómez', 'luis.gomez@example.com', 'mySecret789', GETDATE());
+
+
+-- Creacion de tabla Salas y Salas
+
+CREATE TABLE Salas (
+    idSala INT PRIMARY KEY IDENTITY(1,1),
+    nombre VARCHAR(50) NOT NULL,
+    capacidad INT NOT NULL
+);
+
+
+INSERT INTO Salas (nombre, capacidad)
+VALUES ('Sala 1', 100);
+
+INSERT INTO Salas (nombre, capacidad)
+VALUES ('Sala 2', 100);
