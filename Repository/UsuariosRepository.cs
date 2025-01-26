@@ -46,7 +46,7 @@ namespace Cinema.Repositories
 
         public async Task<Usuarios> GetByIdAsync(int id)
         {
-            Usuarios Usuario = null;
+            Usuarios usuario = null;
 
             using (var connection = new SqlConnection(_connectionString))
             {
@@ -61,7 +61,7 @@ namespace Cinema.Repositories
                     {
                         if (await reader.ReadAsync())
                         {
-                            Usuario = new Usuarios
+                            usuario = new Usuarios
                             {
                                 IdUsuario = reader.GetInt32(0),
                                 Nombre = reader.GetString(1),
@@ -73,7 +73,7 @@ namespace Cinema.Repositories
                     }
                 }
             }
-            return Usuario;
+            return usuario;
         }
 
         public async Task AddAsync(Usuarios Usuario)
