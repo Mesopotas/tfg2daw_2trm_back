@@ -11,6 +11,8 @@ new UsuariosRepository(connectionString));
 builder.Services.AddScoped<IPeliculaRepository, PeliculasRepository>(provider =>
 new PeliculasRepository(connectionString));
 
+builder.Services.AddScoped<IFechasHorasRepository, FechasHorasRepository>(provider =>
+new FechasHorasRepository(connectionString));
 // Add services to the container.
 builder.Services.AddControllers();
 
@@ -21,6 +23,8 @@ builder.Services.AddSwaggerGen();
 //Add services
 builder.Services.AddScoped<IUsuariosService, UsuariosService>();
 builder.Services.AddScoped<IPeliculaService, PeliculaService>();
+builder.Services.AddScoped<IFechasHorasService, FechasHorasService>();
+
 
 
 var app = builder.Build();
