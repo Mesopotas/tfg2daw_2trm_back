@@ -1,14 +1,20 @@
 public class Asientos
 {
-    public string IdAsiento { get; set; }
-    public int Numero { get; set; }
+    public int IdAsiento { get; set; }
+
+    public int IdSala {get; set;}
+    public int NumAsiento { get; set; }
     public bool Estado { get; set; }
     public double Precio {get; set;}
 
-    public Asientos(string idAsiento, int numero, bool estado, double precio)
+
+    public Asientos(){}
+
+    public Asientos(int idAsiento, int idSala ,int numAsiento, bool estado, double precio)
     {
         IdAsiento = idAsiento;
-        Numero = numero;
+        IdSala = idSala;
+        NumAsiento = numAsiento;
         Estado = estado;
         Precio = precio;
     }
