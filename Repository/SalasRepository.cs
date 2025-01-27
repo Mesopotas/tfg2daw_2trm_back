@@ -73,35 +73,62 @@ public async Task<List<Salas>> GetAllAsync()
 }
 
 
-        public async Task<Salas> GetByIdAsync(int id)
+  public async Task<Salas> GetByIdAsync(int id)
+{
+    Salas sala = null;
+
+    using (var connection = new SqlConnection(_connectionString))
+    {
+        await connection.OpenAsync();
+
+        string query = "SELECT idSala, nombre, capacidad FROM Salas WHERE idSala = @Id";
+        using (var command = new SqlCommand(query, connection))
         {
-            Salas sala = null;
+            command.Parameters.AddWithValue("@Id", id);
 
-            using (var connection = new SqlConnection(_connectionString))
+            using (var reader = await command.ExecuteReaderAsync())
             {
-                await connection.OpenAsync();
-
-                string query = "SELECT idSala, nombre, capacidad FROM Salas WHERE idSala = @Id";
-                using (var command = new SqlCommand(query, connection))
+                if (await reader.ReadAsync())
                 {
-                    command.Parameters.AddWithValue("@Id", id);
+                    sala = new Salas(
+                        id: reader.GetInt32(0),
+                        nombre: reader.GetString(1),
+                        capacidad: reader.GetInt32(2),
+                        asientos: new List<Asientos>()
+                    );
+                }
+            }
+        }
 
-                    using (var reader = await command.ExecuteReaderAsync())
+        if (sala != null)
+        {
+            string queryAsientos = "SELECT idAsiento, idSala, numAsiento, precio, estado FROM Asientos WHERE idSala = @idSala";
+
+            using (var commandAsientos = new SqlCommand(queryAsientos, connection))
+            {
+                commandAsientos.Parameters.AddWithValue("@idSala", id);
+
+                using (var readerAsientos = await commandAsientos.ExecuteReaderAsync())
+                {
+                    while (await readerAsientos.ReadAsync())
                     {
-                        if (await reader.ReadAsync())
-                        {
-                            sala = new Salas(
-                                id: reader.GetInt32(0),
-                                nombre: reader.GetString(1),
-                                capacidad: reader.GetInt32(2),
-                                asientos: new List<Asientos>()
-                            );
-                        }
+                        var asiento = new Asientos(
+                            idAsiento: readerAsientos.GetInt32(0),
+                            idSala: readerAsientos.GetInt32(1),
+                            numAsiento: readerAsientos.GetInt32(2),
+                            precio: (double)readerAsientos.GetDecimal(3),
+                            estado: readerAsientos.GetBoolean(4)
+                        );
+
+                        sala.Asientos.Add(asiento);
                     }
                 }
             }
-            return sala;
         }
+    }
+
+    return sala;
+}
         public async Task AddAsync(Salas sala)
         {
             using (var connection = new SqlConnection(_connectionString))
