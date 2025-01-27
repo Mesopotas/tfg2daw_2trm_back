@@ -25,8 +25,6 @@ namespace Cinema.Controllers
             return Ok(salas);
         }
 
-        
-
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Salas>> GetSala(int id)
@@ -44,12 +42,12 @@ namespace Cinema.Controllers
         public async Task<ActionResult<Salas>> CreateSala(Salas salas)
         {
             await _serviceSalas.AddAsync(salas);
-            return CreatedAtAction(nameof(CreateSala), new { id = salas.IdSala }, salas);
+            return CreatedAtAction(nameof(CreateSala), new { id = salas.Id }, salas);
         }
 
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateSala(int id, Salas updatedSalas)
+        public async Task<IActionResult> UpdateSala(int id, Salas updatedSala)
         {
             var existingSala = await _serviceSalas.GetByIdAsync(id);
             if (existingSala == null)
@@ -57,9 +55,9 @@ namespace Cinema.Controllers
                 return NotFound();
             }
 
-            existingSala.Nombre = updatedSalas.Nombre;
-            existingSala.Capacidad = updatedSalas.Capacidad;
-
+            existingSala.Nombre = updatedSala.Nombre;
+            existingSala.Capacidad = updatedSala.Capacidad;
+         
             await _serviceSalas.UpdateAsync(existingSala);
             return NoContent();
         }

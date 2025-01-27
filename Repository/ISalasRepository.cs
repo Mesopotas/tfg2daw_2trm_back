@@ -6,8 +6,8 @@ namespace Cinema.Repositories
     {
         Task<List<Salas>> GetAllAsync();
         Task<Salas?> GetByIdAsync(int id);
-        Task AddAsync(Salas sala);
-        Task UpdateAsync(Salas sala);
+        Task AddAsync(Salas salas);
+        Task UpdateAsync(Salas salas);
         Task DeleteAsync(int id);
         Task InicializarDatosAsync();      
     }
