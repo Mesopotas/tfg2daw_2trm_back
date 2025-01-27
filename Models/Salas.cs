@@ -12,4 +12,6 @@ public class Salas
         Capacidad = capacidad;
         Asientos = asientos;
     }
+
+    public Salas(){}
 }
