@@ -1,3 +1,23 @@
+-- INSTALACION DE IMAGENES Y CONTENEDORES PARA DOCKER
+
+-- Descarga de la imagen con la version correcta de la BBDD de MicrosoftSQL
+
+-- docker pull mcr.microsoft.com/mssql/server:2019-CU21-ubuntu-20.04
+
+-- Creacion del contenedor para la imagen de msSQL
+
+-- docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=<YourStrong@Passw0rd>" -dp 1433:1433 mcr.microsoft.com/mssql/server:2019-CU21-ubuntu-20.04
+
+-- Datos
+---- Usuario: sa
+---- Contraseña: <YourStrong@Passw0rd>
+
+
+
+
+
+-- CONSULTAS PARA LA CREACION DE LA BASE DE DATOS
+
 CREATE DATABASE cinema;
 
 USE cinema;
@@ -63,7 +83,7 @@ VALUES
 ('Toy Story', 'Un juguete lidera una aventura para volver a casa.', 1.400, 'Animación', 'John Lasseter', '1995-11-22', 'https://imagen.com/toystory.jpg', 8);
 
 
--- Creacion de tabla Usuarios
+-- Creacion de tabla Asientos
 
 
 CREATE TABLE Asientos (
