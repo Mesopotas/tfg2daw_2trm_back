@@ -87,8 +87,10 @@ VALUES
 
 
 CREATE TABLE Asientos (
-    idAsiento INT PRIMARY KEY IDENTITY(1,1),
-    idSala INT NOT NULL,      numAsiento INT NOT NULL,         
+    idAsiento INT, -- sin foreign key para que los ids de asientos no sean UNIQUE
+    idSala INT NOT NULL,      
+    numAsiento INT NOT NULL,         
     precio DECIMAL(10, 2) NOT NULL DEFAULT 7.50,     
     estado BIT NOT NULL DEFAULT 1,     
     FOREIGN KEY (idSala) REFERENCES Salas(idSala) );
+
