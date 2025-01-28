@@ -14,6 +14,8 @@ new PeliculasRepository(connectionString));
 builder.Services.AddScoped<ISalasRepository, SalasRepository>(provider =>
 new SalasRepository(connectionString));
 
+builder.Services.AddScoped<IFechasHorasRepository, FechasHorasRepository>(provider =>
+new FechasHorasRepository(connectionString));
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -29,6 +31,8 @@ builder.Services.AddScoped<IPeliculaService, PeliculaService>();
 
 
 builder.Services.AddScoped<ISalasService, SalasService>();
+
+builder.Services.AddScoped<IFechasHorasService, FechasHorasService>();
 
 
 
