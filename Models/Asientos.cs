@@ -18,4 +18,13 @@ public class Asientos
         Estado = estado;
         Precio = precio;
     }
+
+        public Asientos(int idSala ,int numAsiento, bool estado)
+    {
+
+        IdSala = idSala;
+        NumAsiento = numAsiento;
+        Estado = estado;
+
+    }
 }

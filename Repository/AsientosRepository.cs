@@ -44,7 +44,7 @@ namespace Cinema.Repositories
             return asientos;
         }
 
-        public async Task<Asientos> GetByIdSalasAsync(int id)
+        public async Task<Asientos> GetByIdSalasAsync( int id)
         {
             Asientos asiento = null;
 
@@ -110,24 +110,26 @@ namespace Cinema.Repositories
             return asiento;
         }
 
-        /*
+        
         public async Task UpdateAsync(Asientos asientos)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
 
-                string query = @"UPDATE FechasHoras SET fecha = @Fecha WHERE idFechaHora = @IdFechaHora";
+                string query = @"UPDATE Asientos SET Estado = @Estado WHERE idSala = @IdSala AND numAsiento = @NumAsiento;";
 
                 using (var command = new SqlCommand(query, connection))
                 {
-                    command.Parameters.AddWithValue("@IdFechasHoras", fechaActualizar.Fecha);
+                    command.Parameters.AddWithValue("@Estado", Asientos.Estado);
+                    command.Parameters.AddWithValue("@IdSala", Asientos.IdSala);
+                    command.Parameters.AddWithValue("@NumAsiento", Asientos.NumAsiento);
 
                     await command.ExecuteNonQueryAsync();
                 }
             }
         }
-        */
+        
 
 
 
