@@ -94,7 +94,7 @@ public async Task<List<Salas>> GetAllAsync()
                         id: reader.GetInt32(0),
                         nombre: reader.GetString(1),
                         capacidad: reader.GetInt32(2),
-                        asientos: new List<Asientos>()
+                        asientos: new List<Asientos>(3)
                     );
                 }
             }
@@ -164,10 +164,11 @@ public async Task<List<Salas>> GetAllAsync()
                 for (int i = 1; i <= sala.Capacidad; i++)
                 {
                     string insertarAsientosSala = @"
-                INSERT INTO Asientos (idSala, numAsiento, estado) VALUES (@IdSala, @NumAsiento, 1)";
+                INSERT INTO Asientos (idAsiento, idSala, numAsiento, estado) VALUES (@IdAsiento, @IdSala, @NumAsiento, 1)";
 
                     using (var command = new SqlCommand(insertarAsientosSala, connection))
                     {
+                        command.Parameters.AddWithValue("@IdAsiento", i);
                         command.Parameters.AddWithValue("@IdSala", idSala);
                         command.Parameters.AddWithValue("@NumAsiento", i);
                         await command.ExecuteNonQueryAsync();
