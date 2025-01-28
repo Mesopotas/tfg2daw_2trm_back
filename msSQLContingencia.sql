@@ -2,7 +2,9 @@ CREATE DATABASE cinema;
 
 USE cinema;
 
+
 -- Creacion de tabla Usuarios y Usuarios
+
 
 CREATE TABLE Usuarios (
     idUsuario INT PRIMARY KEY IDENTITY(1,1),
@@ -22,7 +24,8 @@ INSERT INTO Usuarios (nombre, email, password, fechaRegistro)
 VALUES ('Luis Gómez', 'luis.gomez@example.com', 'mySecret789', GETDATE());
 
 
--- Creacion de tabla Salas y Salas
+-- Creacion de tabla Salas
+
 
 CREATE TABLE Salas (
     idSala INT PRIMARY KEY IDENTITY(1,1),
@@ -31,14 +34,8 @@ CREATE TABLE Salas (
 );
 
 
-INSERT INTO Salas (nombre, capacidad)
-VALUES ('Sala 1', 100);
-
-INSERT INTO Salas (nombre, capacidad)
-VALUES ('Sala 2', 100);
-
-
 -- Creacion de tabla Peliculas y Peliculas
+
 
 CREATE TABLE Peliculas (
     idPelicula INT PRIMARY KEY IDENTITY(1,1),
@@ -64,3 +61,14 @@ VALUES
 INSERT INTO Peliculas (titulo, sinopsis, duracion, categoria, director, anio, imagenURL, puntuacion)
 VALUES 
 ('Toy Story', 'Un juguete lidera una aventura para volver a casa.', 1.400, 'Animación', 'John Lasseter', '1995-11-22', 'https://imagen.com/toystory.jpg', 8);
+
+
+-- Creacion de tabla Usuarios
+
+
+CREATE TABLE Asientos (
+    idAsiento INT PRIMARY KEY IDENTITY(1,1),
+    idSala INT NOT NULL,      numAsiento INT NOT NULL,         
+    precio DECIMAL(10, 2) NOT NULL DEFAULT 7.50,     
+    estado BIT NOT NULL DEFAULT 1,     
+    FOREIGN KEY (idSala) REFERENCES Salas(idSala) );
