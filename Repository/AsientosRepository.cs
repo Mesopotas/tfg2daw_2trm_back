@@ -20,7 +20,7 @@ namespace Cinema.Repositories
             {
                 await connection.OpenAsync();
 
-                string query = "SELECT idAsiento, idSala, numAsientos, precio, estado FROM Asientos";
+                string query = "SELECT idAsiento, idSala, numAsiento, precio, estado FROM Asientos";
                 using (var command = new SqlCommand(query, connection))
                 {
                     using (var reader = await command.ExecuteReaderAsync())
@@ -52,7 +52,7 @@ namespace Cinema.Repositories
             {
                 await connection.OpenAsync();
 
-                string query = "SELECT idAsiento, idSala, numAsientos, precio, estado FROM Asientos WHERE idAsiento = @IdAsiento";
+                string query = "SELECT idAsiento, idSala, numAsiento, precio, estado FROM Asientos WHERE idAsiento = @IdAsiento";
                 using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@IdAsiento", id);
@@ -85,7 +85,7 @@ namespace Cinema.Repositories
             {
                 await connection.OpenAsync();
 
-                string query = "SELECT idAsiento, idSala, numAsientos, precio, estado FROM Asientos WHERE idSala = @IdSala AND idAsiento = @IdAsiento ";
+                string query = "SELECT idAsiento, idSala, numAsiento, precio, estado FROM Asientos WHERE idSala = @IdSala AND idAsiento = @IdAsiento ";
                 using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@IdSala", idSala);
@@ -121,9 +121,9 @@ namespace Cinema.Repositories
 
                 using (var command = new SqlCommand(query, connection))
                 {
-                    command.Parameters.AddWithValue("@Estado", Asientos.Estado);
-                    command.Parameters.AddWithValue("@IdSala", Asientos.IdSala);
-                    command.Parameters.AddWithValue("@NumAsiento", Asientos.NumAsiento);
+                    command.Parameters.AddWithValue("@Estado", asientos.Estado);
+                    command.Parameters.AddWithValue("@IdSala", asientos.IdSala);
+                    command.Parameters.AddWithValue("@NumAsiento", asientos.NumAsiento);
 
                     await command.ExecuteNonQueryAsync();
                 }
