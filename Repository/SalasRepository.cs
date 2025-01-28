@@ -197,22 +197,27 @@ public async Task<List<Salas>> GetAllAsync()
                 }
             }
         }
-        public async Task DeleteAsync(int id)
+      public async Task DeleteAsync(int id)
+{
+    using (var connection = new SqlConnection(_connectionString))
+    {
+        await connection.OpenAsync();
+
+        string deleteAsientos = "DELETE FROM Asientos WHERE idSala = @Id";
+        using (var command = new SqlCommand(deleteAsientos, connection))
         {
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                await connection.OpenAsync();
-
-                string query = "DELETE FROM Salas WHERE idSala = @Id";
-                using (var command = new SqlCommand(query, connection))
-                {
-                    command.Parameters.AddWithValue("@Id", id);
-
-                    await command.ExecuteNonQueryAsync();
-                }
-            }
+            command.Parameters.AddWithValue("@Id", id);
+            await command.ExecuteNonQueryAsync();
         }
 
+        string deleteSala = "DELETE FROM Salas WHERE idSala = @Id";
+        using (var command = new SqlCommand(deleteSala, connection))
+        {
+            command.Parameters.AddWithValue("@Id", id);
+            await command.ExecuteNonQueryAsync();
+        }
+    }
+}
         public async Task InicializarDatosAsync()
         {
 
