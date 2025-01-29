@@ -27,15 +27,18 @@ namespace Cinema.Service
             return await _asientosRepository.GetByIdAsync(idSala, id);
         }
 
-        public async Task<Asientos?> GetByIdSalasAsync(int id)
-        {
-            return await _asientosRepository.GetByIdSalasAsync(id);
-        }
-
         public async Task UpdateAsync(Asientos asientos)
         {
             await _asientosRepository.UpdateAsync(asientos);
         }
+
+        /*
+        public async Task<Asientos?> GetByIdSalasAsync(int id)
+        {
+            return await _asientosRepository.GetByIdSalasAsync(id);
+        }
+        */
+
 
     }
 }

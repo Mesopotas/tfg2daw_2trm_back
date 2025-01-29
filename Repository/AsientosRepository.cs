@@ -32,8 +32,9 @@ namespace Cinema.Repositories
                                 IdAsiento = reader.GetInt32(0),
                                 IdSala = reader.GetInt32(1),
                                 NumAsiento = reader.GetInt32(2),
-                                Estado = reader.GetBoolean(3),
-                                Precio = reader.GetDouble(4)
+                                Precio = (double)reader.GetDecimal(3),
+                                Estado = reader.GetBoolean(4),
+
                             };
 
                             asientos.Add(asiento);
@@ -42,38 +43,6 @@ namespace Cinema.Repositories
                 }
             }
             return asientos;
-        }
-
-        public async Task<Asientos> GetByIdSalasAsync( int id)
-        {
-            Asientos asiento = null;
-
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                await connection.OpenAsync();
-
-                string query = "SELECT idAsiento, idSala, numAsiento, precio, estado FROM Asientos WHERE idAsiento = @IdAsiento";
-                using (var command = new SqlCommand(query, connection))
-                {
-                    command.Parameters.AddWithValue("@IdAsiento", id);
-
-                    using (var reader = await command.ExecuteReaderAsync())
-                    {
-                        if (await reader.ReadAsync())
-                        {
-                            asiento = new Asientos
-                            {
-                                IdAsiento = reader.GetInt32(0),
-                                IdSala = reader.GetInt32(1),
-                                NumAsiento = reader.GetInt32(2),
-                                Estado = reader.GetBoolean(3),
-                                Precio = reader.GetDouble(4)
-                            };
-                        }
-                    }
-                }
-            }
-            return asiento;
         }
 
 
@@ -100,8 +69,8 @@ namespace Cinema.Repositories
                                 IdAsiento = reader.GetInt32(0),
                                 IdSala = reader.GetInt32(1),
                                 NumAsiento = reader.GetInt32(2),
-                                Estado = reader.GetBoolean(3),
-                                Precio = reader.GetDouble(4)
+                                Precio = (double)reader.GetDecimal(3),
+                                Estado = reader.GetBoolean(4),
                             };
                         }
                     }
@@ -131,6 +100,39 @@ namespace Cinema.Repositories
         }
         
 
+        /*
+        public async Task<Asientos> GetByIdSalasAsync( int id)
+        {
+            Asientos asiento = null;
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+
+                string query = "SELECT idAsiento, idSala, numAsiento, precio, estado FROM Asientos WHERE idAsiento = @IdAsiento";
+                using (var command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@IdAsiento", id);
+
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            asiento = new Asientos
+                            {
+                                IdAsiento = reader.GetInt32(0),
+                                IdSala = reader.GetInt32(1),
+                                NumAsiento = reader.GetInt32(2),
+                                Precio = (double)reader.GetDecimal(3),
+                                Estado = reader.GetBoolean(4),
+                            };
+                        }
+                    }
+                }
+            }
+            return asiento;
+        }
+        */
 
 
     }
