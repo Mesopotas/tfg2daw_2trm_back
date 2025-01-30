@@ -111,7 +111,9 @@ namespace Cinema.Repositories
                     command.Parameters.AddWithValue("@IdOpinion", opinion.Id);
                     command.Parameters.AddWithValue("@IdUsuario", opinion.IdUsuario);
                     command.Parameters.AddWithValue("@IdPelicula", opinion.IdPelicula);
-                    command.Parameters.AddWithValue("@Comentario", opinion.Comentario);                    
+                    command.Parameters.AddWithValue("@Comentario", opinion.Comentario); 
+                    command.Parameters.AddWithValue("@FechaComentario", opinion.FechaComentario);
+                   
                     await command.ExecuteNonQueryAsync();
                 }
             }
