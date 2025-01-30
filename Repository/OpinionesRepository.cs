@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Cinema.Repositories
 {
-    public class OpinionesRepository
+    public class OpinionesRepository : IOpinionesRepository
     {
         private readonly string _connectionString;
 

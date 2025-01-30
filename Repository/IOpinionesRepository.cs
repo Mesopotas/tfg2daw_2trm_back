@@ -9,6 +9,5 @@ namespace Cinema.Repositories
         Task AddAsync(Opiniones opiniones);
         Task UpdateAsync(Opiniones opiniones);
         Task DeleteAsync(int id);
-        Task InicializarDatosAsync();      
     }
 }

@@ -17,6 +17,9 @@ new SalasRepository(connectionString));
 builder.Services.AddScoped<IFechasHorasRepository, FechasHorasRepository>(provider =>
 new FechasHorasRepository(connectionString));
 
+builder.Services.AddScoped<IOpinionesRepository, OpinionesRepository>(provider =>
+new OpinionesRepository(connectionString));
+
 // Add services to the container.
 builder.Services.AddControllers();
 
@@ -34,6 +37,7 @@ builder.Services.AddScoped<ISalasService, SalasService>();
 
 builder.Services.AddScoped<IFechasHorasService, FechasHorasService>();
 
+builder.Services.AddScoped<IOpinionesService, OpinionesService>();
 
 
 var app = builder.Build();
