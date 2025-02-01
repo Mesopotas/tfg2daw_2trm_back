@@ -6,8 +6,8 @@ namespace Cinema.Repositories
     {
         Task<List<Opiniones>> GetAllAsync();
         Task<Opiniones?> GetByIdAsync(int id);
-        Task AddAsync(Opiniones opiniones);
-        Task UpdateAsync(Opiniones opiniones);
+        Task AddAsync(Opiniones opinion);
+        Task UpdateAsync(Opiniones opinion);
         Task DeleteAsync(int id);
     }
 }

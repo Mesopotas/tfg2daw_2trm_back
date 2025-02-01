@@ -23,7 +23,7 @@ namespace Cinema.Repositories
             {
                 await connection.OpenAsync();
 
-                string query = "SELECT idOpinion, idUsuario, idPelicula, comentario, fechaComentario FROM Opiniones";
+                string query = "SELECT IDOPINION, IDUSUARIO, IDPELICULA, COMENTARIO, FECHACOMENTARIO FROM OPINIONES";
                 
                 using (var command = new SqlCommand(query, connection))
                 using (var reader = await command.ExecuteReaderAsync())
@@ -49,7 +49,7 @@ namespace Cinema.Repositories
             {
                 await connection.OpenAsync();
 
-                string query = "SELECT idOpinion, idUsuario, idPelicula, comentario, fechaComentario FROM Opiniones WHERE idOpinion = @Id"; // POSIBILIDAD DE AÑADIR && IdUsuario = @IdUsuario && IdPelicula = @IdPelicula;
+                string query = @"SELECT IDOPINION, IDUSUARIO, IDPELICULA, COMENTARIO, FECHACOMENTARIO FROM OPINIONES WHERE IDOPINION = @Id";
                 
                 using (var command = new SqlCommand(query, connection))
                 {
@@ -79,14 +79,14 @@ namespace Cinema.Repositories
             {
                 await connection.OpenAsync();
 
-                string query = @"INSERT INTO Opiniones (idUsuario, idPelicula, comentario) 
-                               VALUES (@IdUsuario, @IdPelicula, @Comentario)";
+                string query = @"INSERT INTO OPINIONES (IDUSUARIO, IDPELICULA, COMENTARIO, FECHACOMENTARIO) VALUES (@IdUsuario, @IdPelicula, @Comentario, @FechaComentario)";
                 
                 using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@IdUsuario", opinion.IdUsuario);
                     command.Parameters.AddWithValue("@IdPelicula", opinion.IdPelicula);
                     command.Parameters.AddWithValue("@Comentario", opinion.Comentario);
+                    command.Parameters.AddWithValue("@FechaComentario", opinion.FechaComentario);
                     
                     await command.ExecuteNonQueryAsync();
                 }
@@ -99,19 +99,14 @@ namespace Cinema.Repositories
             {
                 await connection.OpenAsync();
 
-                string query = @"UPDATE Opiniones SET 
-                                idUsuario = @IdUsuario, 
-                                idPelicula = @IdPelicula, 
-                                comentario = @Comentario, 
-                                fechaComentario = @FechaComentario 
-                                WHERE idOpinion = @IdOpinion";
+                string query = @"UPDATE OPINIONES SET IDUSUARIO = @IdUsuario, IDPELICULA = @IdPelicula, COMENTARIO = @Comentario, FECHACOMENTARIO = @FechaComentario WHERE IDOPINION = @IdOpinion";
                 
                 using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@IdOpinion", opinion.Id);
                     command.Parameters.AddWithValue("@IdUsuario", opinion.IdUsuario);
                     command.Parameters.AddWithValue("@IdPelicula", opinion.IdPelicula);
-                    command.Parameters.AddWithValue("@Comentario", opinion.Comentario); 
+                    command.Parameters.AddWithValue("@Comentario", opinion.Comentario);
                     command.Parameters.AddWithValue("@FechaComentario", opinion.FechaComentario);
                    
                     await command.ExecuteNonQueryAsync();
@@ -125,7 +120,7 @@ namespace Cinema.Repositories
             {
                 await connection.OpenAsync();
 
-                string query = "DELETE FROM Opiniones WHERE idOpinion = @Id";
+                string query = "DELETE FROM OPINIONES WHERE IDOPINION = @Id";
                 
                 using (var command = new SqlCommand(query, connection))
                 {

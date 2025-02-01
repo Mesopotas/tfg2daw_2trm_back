@@ -8,14 +8,15 @@ public class Opiniones
     public string Comentario { get; set; }
     public DateTime FechaComentario { get; set; }
 
+    public Opiniones() {}
 
     public Opiniones(int id, int idUsuario, int idPelicula, string comentario, DateTime fechaComentario)
-    {
+        {
         Id = id;
         IdUsuario = idUsuario;
         IdPelicula = idPelicula;
         Comentario = comentario;
         FechaComentario = fechaComentario;
+        }
     }
 
-}
