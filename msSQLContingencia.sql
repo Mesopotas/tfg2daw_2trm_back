@@ -13,84 +13,140 @@
 ---- Contraseña: <YourStrong@Passw0rd>
 
 
-
-
-
 -- CONSULTAS PARA LA CREACION DE LA BASE DE DATOS
 
-CREATE DATABASE cinema;
+-- Creación de la base de datos
+CREATE DATABASE CinemaDB;
+GO
+USE CinemaDB;
+GO
 
-USE cinema;
-
-
--- Creacion de tabla Usuarios y Usuarios
-
-
-CREATE TABLE Usuarios (
-    idUsuario INT PRIMARY KEY IDENTITY(1,1),
-    nombre VARCHAR(50) NOT NULL,
-    email VARCHAR(50) NOT NULL UNIQUE,
-    password VARCHAR(50) NOT NULL,
-    fechaRegistro DATETIME NOT NULL DEFAULT GETDATE()
+-- Tabla JORNADA
+CREATE TABLE JORNADA (
+	IDJORNADA INT IDENTITY(1,1) PRIMARY KEY,
+	FECHA DATE NOT NULL
 );
 
-INSERT INTO Usuarios (nombre, email, password, fechaRegistro)
-VALUES ('Carlos Pérez', 'carlos.perez@example.com', 'password123', GETDATE());
-
-INSERT INTO Usuarios (nombre, email, password, fechaRegistro)
-VALUES ('María López', 'maria.lopez@example.com', 'securePass456', GETDATE());
-
-INSERT INTO Usuarios (nombre, email, password, fechaRegistro)
-VALUES ('Luis Gómez', 'luis.gomez@example.com', 'mySecret789', GETDATE());
-
-
--- Creacion de tabla Salas
-
-
-CREATE TABLE Salas (
-    idSala INT PRIMARY KEY IDENTITY(1,1),
-    nombre VARCHAR(50) NOT NULL,
-    capacidad INT NOT NULL
+-- Tabla PELICULAS
+CREATE TABLE PELICULAS (
+	IDPELICULA INT IDENTITY(1,1) PRIMARY KEY,
+	TITULO NVARCHAR(250) NOT NULL,
+	SINOPSIS NVARCHAR(MAX),
+	DURACION INT,
+	CATEGORIA NVARCHAR(250),
+	DIRECTOR NVARCHAR(250),
+	ANO INT,
+	IMAGENURL NVARCHAR(MAX),
+	PUNTUACION FLOAT
 );
 
 
--- Creacion de tabla Peliculas y Peliculas
+
+-- Insertar PELICULAS
+INSERT INTO PELICULAS (TITULO, SINOPSIS, DURACION, CATEGORIA, DIRECTOR, ANO, IMAGENURL, PUNTUACION) 
+VALUES 
+('Inception', 'Un ladrón roba secretos a través de sueños.', 148, 'Ciencia ficción', 'Christopher Nolan', 2010, 'https://imagen.com/inception.jpg', 9),
+('The Godfather', 'La historia de una familia mafiosa.', 175, 'Drama', 'Francis Ford Coppola', 1972, 'https://imagen.com/godfather.jpg', 10),
+('Toy Story', 'Un juguete lidera una aventura para volver a casa.', 100, 'Animación', 'John Lasseter', 1995, 'https://imagen.com/toystory.jpg', 8);
 
 
-CREATE TABLE Peliculas (
-    idPelicula INT PRIMARY KEY IDENTITY(1,1),
-    titulo VARCHAR(50) NOT NULL,
-    sinopsis VARCHAR(50),
-    duracion DECIMAL(4,3),
-    categoria VARCHAR(50),
-    director VARCHAR(50),
-    anio DATETIME,
-    imagenURL VARCHAR(50),
-    puntuacion INT
+
+-- Tabla SALA
+CREATE TABLE SALA (
+	IDSALA INT IDENTITY(1,1) PRIMARY KEY,
+	NOMBRE NVARCHAR(50) NOT NULL,
+	CAPACIDAD INT NOT NULL
 );
 
+-- Tabla TRAMOHORARIO
+CREATE TABLE TRAMOHORARIO (
+	IDTRAMOHORARIO INT IDENTITY(1,1) PRIMARY KEY,
+	HORAINICIO NVARCHAR(44) NOT NULL,
+	HORAFIN NVARCHAR(44) NOT NULL
+);
 
-INSERT INTO Peliculas (titulo, sinopsis, duracion, categoria, director, anio, imagenURL, puntuacion)
+-- Tabla SESION
+CREATE TABLE SESION (
+	IDSESION INT IDENTITY(1,1) PRIMARY KEY,
+	IDPELICULA INT,
+	IDSALA INT,
+	IDTRAMOHORARIO INT,
+	IDJORNADA INT,
+	FOREIGN KEY (IDPELICULA) REFERENCES PELICULAS(IDPELICULA),
+	FOREIGN KEY (IDSALA) REFERENCES SALA(IDSALA),
+	FOREIGN KEY (IDTRAMOHORARIO) REFERENCES TRAMOHORARIO(IDTRAMOHORARIO),
+	FOREIGN KEY (IDJORNADA) REFERENCES JORNADA(IDJORNADA)
+);
+
+-- Tabla USUARIOS
+CREATE TABLE USUARIOS (
+	DNI NVARCHAR(15) PRIMARY KEY,
+	NOMBRE NVARCHAR(50) NOT NULL,
+	APELLIDOS NVARCHAR(250) NOT NULL,
+	EMAIL NVARCHAR(250) NOT NULL,
+	FECHAREGISTRO DATETIME NOT NULL
+);
+
+-- Insert USUARIOS
+INSERT INTO USUARIOS (DNI, NOMBRE, APELLIDOS, EMAIL, FECHAREGISTRO) 
 VALUES 
-('Inception', 'Un ladrón roba secretos a través de sueños.', 2.148, 'Ciencia ficción', 'Christopher Nolan', '2010-07-16', 'https://imagen.com/inception.jpg', 9);
+('12345678A', 'Juan', 'Pérez Gómez', 'juan.perez@example.com', GETDATE()),
+('87654321B', 'Ana', 'López Martínez', 'ana.lopez@example.com', GETDATE()),
+('56781234C', 'Carlos', 'Fernández Ruiz', 'carlos.fernandez@example.com', GETDATE());
 
-INSERT INTO Peliculas (titulo, sinopsis, duracion, categoria, director, anio, imagenURL, puntuacion)
+
+-- Tabla FACTURAS
+CREATE TABLE FACTURAS (
+	IDFACTURA UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+	DNI NVARCHAR(15),
+	FECHA DATETIME NOT NULL,
+	TOTAL FLOAT NOT NULL,
+	IDSESION INT,
+	FOREIGN KEY (DNI) REFERENCES USUARIOS(DNI),
+	FOREIGN KEY (IDSESION) REFERENCES SESION(IDSESION)
+);
+
+-- Tabla GRUPO_ASIENTOS
+CREATE TABLE GRUPO_ASIENTOS (
+	IDGRUPO INT IDENTITY(1,1) PRIMARY KEY,
+	DESCRIPCION NVARCHAR(50),
+	PRECIO FLOAT NOT NULL
+);
+
+-- Tabla ASIENTOS
+CREATE TABLE ASIENTOS (
+	IDASIENTO INT IDENTITY(1,1) PRIMARY KEY,
+	IDSALA INT,
+	NUM_ASIENTO INT NOT NULL,
+	ESTADO CHAR(1) NOT NULL,
+	IDGRUPO INT,
+	FOREIGN KEY (IDSALA) REFERENCES SALA(IDSALA),
+	FOREIGN KEY (IDGRUPO) REFERENCES GRUPO_ASIENTOS(IDGRUPO)
+);
+
+-- Tabla LINEA
+CREATE TABLE LINEA (
+	IDLINEA INT IDENTITY(1,1) PRIMARY KEY,
+	IDFACTURA UNIQUEIDENTIFIER,
+	IDASIENTO INT,
+	FOREIGN KEY (IDFACTURA) REFERENCES FACTURAS(IDFACTURA),
+	FOREIGN KEY (IDASIENTO) REFERENCES ASIENTOS(IDASIENTO)
+);
+
+-- Tabla OPINIONES
+CREATE TABLE OPINIONES (
+	IDOPINION INT IDENTITY(1,1) PRIMARY KEY,
+	DNIUSUARIO NVARCHAR(15),
+	IDPELICULA INT,
+	COMENTARIO NVARCHAR(MAX),
+	FECHACOMENTARIO DATETIME NOT NULL,
+	FOREIGN KEY (DNIUSUARIO) REFERENCES USUARIOS(DNI),
+	FOREIGN KEY (IDPELICULA) REFERENCES PELICULAS(IDPELICULA)
+);
+
+-- Insert OPINIONES
+INSERT INTO OPINIONES (DNIUSUARIO, IDPELICULA, COMENTARIO, FECHACOMENTARIO) 
 VALUES 
-('The Godfather', 'La historia de una familia mafiosa.', 2.555, 'Drama', 'Francis Ford Coppola', '1972-03-24', 'https://imagen.com/godfather.jpg', 10);
-
-INSERT INTO Peliculas (titulo, sinopsis, duracion, categoria, director, anio, imagenURL, puntuacion)
-VALUES 
-('Toy Story', 'Un juguete lidera una aventura para volver a casa.', 1.400, 'Animación', 'John Lasseter', '1995-11-22', 'https://imagen.com/toystory.jpg', 8);
-
-
--- Creacion de tabla Asientos
-
-
-CREATE TABLE Asientos (
-    idAsiento INT, -- sin foreign key para que los ids de asientos no sean UNIQUE
-    idSala INT NOT NULL,      
-    numAsiento INT NOT NULL,         
-    precio DECIMAL(10, 2) NOT NULL DEFAULT 7.50,     
-    estado BIT NOT NULL DEFAULT 1,     
-    FOREIGN KEY (idSala) REFERENCES Salas(idSala) );
-
+('12345678A', 1, 'Película increíble, te hace pensar.', GETDATE()),
+('87654321B', 2, 'Una obra maestra del cine.', GETDATE()),
+('56781234C', 3, 'Muy divertida y con mucho corazón.', GETDATE());
