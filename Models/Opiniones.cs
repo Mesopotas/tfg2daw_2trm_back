@@ -3,19 +3,20 @@ using Models;
 public class Opiniones
 {
     public int Id { get; set; }
-    public List<Usuarios> Usuarios { get; set; }
-    public List<Peliculas> Peliculas { get; set; }
+    public int IdUsuario { get; set; }
+    public int IdPelicula { get; set; }
     public string Comentario { get; set; }
-    public DateTime FechaComentario { get; set; } // pendiente de pensar si dejar DateTime o usar String
+    public DateTime FechaComentario { get; set; }
 
+    public Opiniones() {}
 
-    public Opiniones(int id, List<Usuarios> usuarios, List<Peliculas> peliculas, string comentario, DateTime fechaComentario)
-    {
+    public Opiniones(int id, int idUsuario, int idPelicula, string comentario, DateTime fechaComentario)
+        {
         Id = id;
-        Usuarios = usuarios;
-        Peliculas = peliculas;
+        IdUsuario = idUsuario;
+        IdPelicula = idPelicula;
         Comentario = comentario;
         FechaComentario = fechaComentario;
+        }
     }
 
-}
