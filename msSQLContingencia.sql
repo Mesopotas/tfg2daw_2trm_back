@@ -85,15 +85,16 @@ CREATE TABLE USUARIOS (
     NOMBRE NVARCHAR(50) ,
     APELLIDOS NVARCHAR(250),
     EMAIL NVARCHAR(250) ,
+	CONTRASENIA NVARCHAR(150),
     FECHAREGISTRO DATETIME
 );
 
 -- Insert USUARIOS
-INSERT INTO USUARIOS (DNI, NOMBRE, APELLIDOS, EMAIL, FECHAREGISTRO) 
+INSERT INTO USUARIOS (DNI, NOMBRE, APELLIDOS, EMAIL, CONTRASENIA, FECHAREGISTRO) 
 VALUES 
-('12345678A', 'Juan', 'Pérez Gómez', 'juan.perez@example.com', GETDATE()),
-('87654321B', 'Ana', 'López Martínez', 'ana.lopez@example.com', GETDATE()),
-('56781234C', 'Carlos', 'Fernández Ruiz', 'carlos.fernandez@example.com', GETDATE());
+('12345678A', 'Juan', 'Pérez Gómez', 'juan.perez@example.com','123', GETDATE()),
+('87654321B', 'Ana', 'López Martínez', 'ana.lopez@example.com', '456',GETDATE()),
+('56781234C', 'Carlos', 'Fernández Ruiz', 'carlos.fernandez@example.com','789', GETDATE());
 
 
 -- Tabla FACTURAS

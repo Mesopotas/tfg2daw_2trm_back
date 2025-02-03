@@ -20,7 +20,7 @@ namespace Cinema.Repositories
             {
                 await connection.OpenAsync();
 
-                string query = "SELECT idUsuario, nombre, email, password, fechaRegistro FROM Usuarios";
+                string query = "SELECT idUsuario, dni, nombre, apellidos, email, contrasenia, fechaRegistro FROM Usuarios";
                 using (var command = new SqlCommand(query, connection))
                 {
                     using (var reader = await command.ExecuteReaderAsync())
@@ -30,10 +30,12 @@ namespace Cinema.Repositories
                             var usuario = new Usuarios
                             {
                                 IdUsuario = reader.GetInt32(0),
-                                Nombre = reader.GetString(1),
-                                Email = reader.GetString(2),
-                                Password = reader.GetString(3),
-                                FechaRegistro = reader.GetDateTime(4)
+                                DNI = reader.GetString(1),
+                                Nombre = reader.GetString(2),
+                                Apellidos = reader.GetString(3),
+                                Email = reader.GetString(4),
+                                Contrasenia = reader.GetString(5),
+                                FechaRegistro = reader.GetDateTime(6)
                             };
 
                             usuarios.Add(usuario);
@@ -52,7 +54,7 @@ namespace Cinema.Repositories
             {
                 await connection.OpenAsync();
 
-                string query = "SELECT idUsuario, nombre, email, password, fechaRegistro FROM Usuarios WHERE idUsuario = @Id";
+                string query = "SELECT idUsuario, dni, nombre, apellidos, email, contrasenia, fechaRegistro FROM Usuarios WHERE idUsuario = @Id";
                 using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@Id", id);
@@ -64,10 +66,12 @@ namespace Cinema.Repositories
                             usuario = new Usuarios
                             {
                                 IdUsuario = reader.GetInt32(0),
-                                Nombre = reader.GetString(1),
-                                Email = reader.GetString(2),
-                                Password = reader.GetString(3),
-                                FechaRegistro = reader.GetDateTime(4)
+                                DNI = reader.GetString(1),
+                                Nombre = reader.GetString(2),
+                                Apellidos = reader.GetString(3),
+                                Email = reader.GetString(4),
+                                Contrasenia = reader.GetString(5),
+                                FechaRegistro = reader.GetDateTime(6)
                             };
                         }
                     }
@@ -82,12 +86,16 @@ namespace Cinema.Repositories
             {
                 await connection.OpenAsync();
 
-                string query = "INSERT INTO Usuarios (nombre, email, password) VALUES (@Nombre, @Email, @Password)";
+                string query = "INSERT INTO Usuarios (dni, nombre, apellidos, email, contrasenia, fechaRegistro) VALUES (@DNI, @Nombre, @Apellidos, @Email, @Contrasenia, @FechaRegistro)";
                 using (var command = new SqlCommand(query, connection))
                 {
+                    command.Parameters.AddWithValue("@DNI", usuario.DNI);
                     command.Parameters.AddWithValue("@Nombre", usuario.Nombre);
+                    command.Parameters.AddWithValue("@Apellidos", usuario.Apellidos);
                     command.Parameters.AddWithValue("@Email", usuario.Email);
-                    command.Parameters.AddWithValue("@Password", usuario.Password);
+                    command.Parameters.AddWithValue("@Contrasenia", usuario.Contrasenia);
+                    command.Parameters.AddWithValue("@FechaRegistro", usuario.FechaRegistro);
+
 
                     await command.ExecuteNonQueryAsync();
                 }
@@ -100,13 +108,16 @@ namespace Cinema.Repositories
             {
                 await connection.OpenAsync();
 
-                string query = "UPDATE Usuarios SET nombre = @Nombre, email = @Email, password = @Password, fechaRegistro = @FechaRegistro WHERE idUsuario = @IdUsuario";
+                string query = "UPDATE Usuarios SET dni = @DNI, nombre = @Nombre, apellidos = @apellidos, email = @Email, contrasenia = @Contrasenia, fechaRegistro = @FechaRegistro WHERE idUsuario = @IdUsuario";
                 using (var command = new SqlCommand(query, connection))
                 {
+                                     
                     command.Parameters.AddWithValue("@IdUsuario", usuario.IdUsuario);
+                    command.Parameters.AddWithValue("@DNI", usuario.DNI);
                     command.Parameters.AddWithValue("@Nombre", usuario.Nombre);
+                    command.Parameters.AddWithValue("@apellidos", usuario.Apellidos);
                     command.Parameters.AddWithValue("@Email", usuario.Email);
-                    command.Parameters.AddWithValue("@Password", usuario.Password);
+                    command.Parameters.AddWithValue("@Contrasenia", usuario.Contrasenia);
                     command.Parameters.AddWithValue("@FechaRegistro", usuario.FechaRegistro);
 
                     await command.ExecuteNonQueryAsync();

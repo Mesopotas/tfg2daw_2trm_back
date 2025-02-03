@@ -54,10 +54,11 @@ namespace Cinema.Controllers
             {
                 return NotFound();
             }
-
+            existingUsuario.DNI = updatedUsuarios.DNI;
             existingUsuario.Nombre = updatedUsuarios.Nombre;
+            existingUsuario.Apellidos = updatedUsuarios.Apellidos;
             existingUsuario.Email = updatedUsuarios.Email;
-            existingUsuario.Password = updatedUsuarios.Password;
+            existingUsuario.Contrasenia = updatedUsuarios.Contrasenia;
             existingUsuario.FechaRegistro = updatedUsuarios.FechaRegistro;
 
             await _serviceUsuarios.UpdateAsync(existingUsuario);
