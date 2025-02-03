@@ -32,10 +32,10 @@ namespace Cinema.Repositories
                                 IdPelicula = reader.GetInt32(0),
                                 Titulo = reader.GetString(1),
                                 Sinopsis = reader.GetString(2),
-                                Duracion = (double)reader.GetDecimal(3),
+                                Duracion = reader.GetInt32(3),
                                 Categoria = reader.GetString(4),
                                 Director = reader.GetString(5),
-                                Anio = reader.GetDateTime(6),
+                                Anio = reader.GetInt32(6),
                                 ImagenURL = reader.GetString(7),
                                 Puntuacion = reader.GetInt32(8)
                             };
@@ -70,10 +70,10 @@ namespace Cinema.Repositories
                                 IdPelicula = reader.GetInt32(0),
                                 Titulo = reader.GetString(1),
                                 Sinopsis = reader.GetString(2),
-                                Duracion = (double)reader.GetDecimal(3),
+                                Duracion = reader.GetInt32(3),
                                 Categoria = reader.GetString(4),
                                 Director = reader.GetString(5),
-                                Anio = reader.GetDateTime(6),
+                                Anio = reader.GetInt32(6),
                                 ImagenURL = reader.GetString(7),
                                 Puntuacion = reader.GetInt32(8)
                             };
@@ -140,7 +140,7 @@ namespace Cinema.Repositories
             using (var connection = new SqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
-
+                // si el id de la pelicula esta presente en otra tabla como puede ser OPINIONES no dejará borrarlo hasta haber borrado la fila asociada a ese id de la pelicula 
                 string query = "DELETE FROM Peliculas WHERE idPelicula = @Id";
                 using (var command = new SqlCommand(query, connection))
                 {
