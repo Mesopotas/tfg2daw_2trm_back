@@ -21,5 +21,28 @@ namespace Cinema.Service
         {
             return await _gruposAsientosRepository.GetAllAsync();
         }
+
+        
+        public async Task<GruposAsientos?> GetByIdAsync(int id)
+        {
+            return await _gruposAsientosRepository.GetByIdAsync(id);
+        }
+
+        public async Task AddAsync(GruposAsientos gruposAsientos)
+        {
+            await _gruposAsientosRepository.AddAsync(gruposAsientos);
+        }
+
+        public async Task UpdateAsync(GruposAsientos gruposAsientos)
+        {
+            await _gruposAsientosRepository.UpdateAsync(gruposAsientos);
+        }
+
+        public async Task DeleteAsync(int id)
+        {
+            await _gruposAsientosRepository.GetByIdAsync(id);
+            await _gruposAsientosRepository.DeleteAsync(id);
+        }
+
     }
 }
