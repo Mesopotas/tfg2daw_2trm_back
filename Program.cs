@@ -11,14 +11,17 @@ new UsuariosRepository(connectionString));
 builder.Services.AddScoped<IPeliculaRepository, PeliculasRepository>(provider =>
 new PeliculasRepository(connectionString));
 
-builder.Services.AddScoped<ISalasRepository, SalasRepository>(provider =>
-new SalasRepository(connectionString));
+//builder.Services.AddScoped<ISalasRepository, SalasRepository>(provider =>
+//new SalasRepository(connectionString));
 
 builder.Services.AddScoped<IFechasHorasRepository, FechasHorasRepository>(provider =>
 new FechasHorasRepository(connectionString));
 
 builder.Services.AddScoped<IOpinionesRepository, OpinionesRepository>(provider =>
 new OpinionesRepository(connectionString));
+
+builder.Services.AddScoped<IGruposAsientosRepository, GruposAsientosRepository>(provider =>
+new GruposAsientosRepository(connectionString));
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -33,11 +36,13 @@ builder.Services.AddScoped<IUsuariosService, UsuariosService>();
 builder.Services.AddScoped<IPeliculaService, PeliculaService>();
 
 
-builder.Services.AddScoped<ISalasService, SalasService>();
+//builder.Services.AddScoped<ISalasService, SalasService>();
 
 builder.Services.AddScoped<IFechasHorasService, FechasHorasService>();
 
 builder.Services.AddScoped<IOpinionesService, OpinionesService>();
+
+builder.Services.AddScoped<IGruposAsientosService, GruposAsientosService>();
 
 
 var app = builder.Build();
