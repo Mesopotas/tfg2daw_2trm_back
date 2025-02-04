@@ -41,5 +41,91 @@ namespace Cinema.Repositories
             }
             return salas;
         }
+
+        public async Task<Salas> GetByIdAsync(int id)
+        {
+            Salas sala = null;
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+
+                string query = "SELECT IDSALA, NOMBRE, CAPACIDAD FROM SALA WHERE IDSALA = @Id";
+                using (var command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@Id", id);
+
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            sala = new Salas
+                            {
+                                IdSala = reader.GetInt32(0),
+                                Nombre = reader.GetString(1),
+                                Capacidad = reader.GetInt32(2),
+                            };
+                        }
+                    }
+                }
+            }
+            return sala;
+        }
+
+        public async Task AddAsync(Salas sala)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+
+                string query = "INSERT INTO SALA (NOMBRE, CAPACIDAD) VALUES (@Nombre, @Capacidad)";
+                using (var command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@Nombre", sala.Nombre);
+                    command.Parameters.AddWithValue("@Capacidad", sala.Capacidad);
+
+                    await command.ExecuteNonQueryAsync();
+                }
+            }
+        }
+
+        public async Task UpdateAsync(Salas sala)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+
+                string query = "UPDATE SALA SET NOMBRE = @Nombre WHERE IDSALA = @Id";
+                using (var command = new SqlCommand(query, connection))
+                {
+
+                    command.Parameters.AddWithValue("@Id", sala.IdSala);
+                    command.Parameters.AddWithValue("@Nombre", sala.Nombre);
+
+                    await command.ExecuteNonQueryAsync();
+                }
+            }
+        }
+
+        public async Task DeleteAsync(int id)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+
+                string query = "DELETE FROM SALA WHERE IDSALA = @Id";
+                using (var command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@Id", id);
+
+                    await command.ExecuteNonQueryAsync();
+                }
+            }
+        }
+
+
+
+
+
     }
 }
