@@ -11,8 +11,8 @@ new UsuariosRepository(connectionString));
 builder.Services.AddScoped<IPeliculaRepository, PeliculasRepository>(provider =>
 new PeliculasRepository(connectionString));
 
-//builder.Services.AddScoped<ISalasRepository, SalasRepository>(provider =>
-//new SalasRepository(connectionString));
+builder.Services.AddScoped<ISalasRepository, SalasRepository>(provider =>
+new SalasRepository(connectionString));
 
 builder.Services.AddScoped<IFechasHorasRepository, FechasHorasRepository>(provider =>
 new FechasHorasRepository(connectionString));
@@ -36,7 +36,7 @@ builder.Services.AddScoped<IUsuariosService, UsuariosService>();
 builder.Services.AddScoped<IPeliculaService, PeliculaService>();
 
 
-//builder.Services.AddScoped<ISalasService, SalasService>();
+builder.Services.AddScoped<ISalasService, SalasService>();
 
 builder.Services.AddScoped<IFechasHorasService, FechasHorasService>();
 
