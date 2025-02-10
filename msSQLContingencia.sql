@@ -16,156 +16,100 @@
 -- CONSULTAS PARA LA CREACION DE LA BASE DE DATOS
 
 -- Creación de la base de datos
-CREATE DATABASE CinemaDB;
+CREATE DATABASE CoworkingDB;
 
-USE CinemaDB;
+USE CoworkingDB;
 
-
--- Tabla JORNADA
-CREATE TABLE JORNADA (
-	IDJORNADA INT IDENTITY(1,1) PRIMARY KEY,
-	FECHA DATETIME
+-- Tabla roles Usuarios
+CREATE TABLE Roles (
+    IdRol INT IDENTITY(1,1) PRIMARY KEY,
+    Nombre NVARCHAR(30),
+    Descripcion NVARCHAR(255)
 );
 
--- Tabla PELICULAS
-CREATE TABLE PELICULAS (
-	IDPELICULA INT IDENTITY(1,1) PRIMARY KEY,
-	TITULO NVARCHAR(250),
-	SINOPSIS NVARCHAR(MAX),
-	DURACION INT,
-	CATEGORIA NVARCHAR(250),
-	DIRECTOR NVARCHAR(250),
-	ANIO INT,
-	IMAGENURL NVARCHAR(MAX),
-	PUNTUACION INT
+-- Tabla de Usuarios
+CREATE TABLE Usuarios (
+    IdUsuario INT IDENTITY(1,1) PRIMARY KEY,
+    Nombre NVARCHAR(100),
+    Apellidos NVARCHAR(200),
+    DNI NVARCHAR(16),
+    Email NVARCHAR(255),
+    Contrasenia NVARCHAR(255),
+    Telefono NVARCHAR(15),
+    FechaRegistro DATETIME DEFAULT GETDATE(),
+    IdRol INT,
+    FOREIGN KEY (IdRol) REFERENCES Roles(IdRol)
+);
+
+/* PROVISIONAL, NO IMPLEMENTADO DE MOMENTO
+CREATE TABLE Mesas (
+    IdMesa INT IDENTITY(1,1) PRIMARY KEY,
+    NumAsientos INT -- numero de asientos que hay por cada mesa
+);
+*/
+-- Tabla TipoSalas
+CREATE TABLE TipoSalas (
+    IdTipoSala INT IDENTITY(1,1) PRIMARY KEY,
+    Nombre NVARCHAR(100)
+);
+
+-- Tabla de Salas
+CREATE TABLE Salas (
+    IdSala INT IDENTITY(1,1) PRIMARY KEY,
+    Nombre NVARCHAR(100),
+    Tipo NVARCHAR(50) DEFAULT 'Privada',
+    Capacidad INT,
+    PrecioPorHora DECIMAL(10,2),
+    IdTipoSala INT,
+    FOREIGN KEY (IdTipoSala) REFERENCES TipoSalas(IdTipoSala)
 );
 
 
-
--- Insertar PELICULAS
-INSERT INTO PELICULAS (TITULO, SINOPSIS, DURACION, CATEGORIA, DIRECTOR, ANIO, IMAGENURL, PUNTUACION) 
-VALUES 
-('Inception', 'Un ladrón roba secretos a través de sueños.', 148, 'Ciencia ficción', 'Christopher Nolan', 2010, 'https://imagen.com/inception.jpg', 9),
-('The Godfather', 'La historia de una familia mafiosa.', 175, 'Drama', 'Francis Ford Coppola', 1972, 'https://imagen.com/godfather.jpg', 10),
-('Toy Story', 'Un juguete lidera una aventura para volver a casa.', 100, 'Animación', 'John Lasseter', 1995, 'https://imagen.com/toystory.jpg', 8);
-
-
-
-
-
-
-
--- Tabla SALA
-CREATE TABLE SALA (
-	IDSALA INT IDENTITY(1,1) PRIMARY KEY,
-	NOMBRE NVARCHAR(50),
-	CAPACIDAD INT
+-- Tabla de Asientos
+CREATE TABLE Asientos (
+    IdAsiento INT IDENTITY(1,1) PRIMARY KEY,
+    NumAsiento INT,
+    Estado CHAR DEFAULT '0', -- 0 será disponible, 1 será ocupado, y 2 será bloqueado por administrador
+    IdSala INT,
+    FOREIGN KEY (IdSala) REFERENCES Salas(IdSala)
 );
 
--- Insert de TABLAS
-
-INSERT INTO SALA (NOMBRE, CAPACIDAD)
-VALUES 
-('Sala 1', 100),
-('Sala 2', 150),
-('Sala 3', 200),
-
-
-
-
-
-
--- Tabla TRAMOHORARIO
-CREATE TABLE TRAMOHORARIO (
-	IDTRAMOHORARIO INT IDENTITY(1,1) PRIMARY KEY,
-	HORAINICIO NVARCHAR(44),
-	HORAFIN NVARCHAR(44)
+-- Tabla de Reservas
+CREATE TABLE Reservas (
+    IdReserva INT IDENTITY(1,1) PRIMARY KEY,
+    UsuarioID INT,
+    SalaID INT,
+    Fecha DATE,
+    HoraInicio DATETIME,
+    HorasReservadas INT,
+    PrecioReserva DECIMAL(10,2),
+    FOREIGN KEY (UsuarioID) REFERENCES Usuarios(IdUsuario),
+    FOREIGN KEY (SalaID) REFERENCES Salas(IdSala)
 );
 
--- Tabla SESION
-CREATE TABLE SESION (
-	IDSESION INT IDENTITY(1,1) PRIMARY KEY,
-	IDPELICULA INT,
-	IDSALA INT,
-	IDTRAMOHORARIO INT,
-	IDJORNADA INT,
-	FOREIGN KEY (IDPELICULA) REFERENCES PELICULAS(IDPELICULA),
-	FOREIGN KEY (IDSALA) REFERENCES SALA(IDSALA),
-	FOREIGN KEY (IDTRAMOHORARIO) REFERENCES TRAMOHORARIO(IDTRAMOHORARIO),
-	FOREIGN KEY (IDJORNADA) REFERENCES JORNADA(IDJORNADA)
+-- Tabla de Reservas de Asientos
+CREATE TABLE ReservasAsientos (
+    IdReservaAsiento INT IDENTITY(1,1) PRIMARY KEY,
+    ReservaID INT,
+    AsientoID INT,
+    FOREIGN KEY (ReservaID) REFERENCES Reservas(IdReserva),
+    FOREIGN KEY (AsientoID) REFERENCES Asientos(IdAsiento)
 );
 
--- TABLA USUARIOS
-CREATE TABLE USUARIOS (
-    IDUSUARIO INT IDENTITY(1,1) PRIMARY KEY,
-    DNI NVARCHAR(15),
-    NOMBRE NVARCHAR(50) ,
-    APELLIDOS NVARCHAR(250),
-    EMAIL NVARCHAR(250) ,
-	CONTRASENIA NVARCHAR(150),
-    FECHAREGISTRO DATETIME
-);
-
--- Insert USUARIOS
-INSERT INTO USUARIOS (DNI, NOMBRE, APELLIDOS, EMAIL, CONTRASENIA, FECHAREGISTRO) 
-VALUES 
-('12345678A', 'Juan', 'Pérez Gómez', 'juan.perez@example.com','123', GETDATE()),
-('87654321B', 'Ana', 'López Martínez', 'ana.lopez@example.com', '456',GETDATE()),
-('56781234C', 'Carlos', 'Fernández Ruiz', 'carlos.fernandez@example.com','789', GETDATE());
+CREATE TABLE Facturas (
+    IdFactura INT IDENTITY(1,1) PRIMARY KEY,
+    IdReservaAsiento INT,
+    FOREIGN KEY(IdReservaAsiento) REFERENCES ReservasAsientos(IdReservaAsiento)
+)
 
 
--- Tabla FACTURAS
-CREATE TABLE FACTURAS (
-	IDFACTURA UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-	IDUSUARIO INT,
-	FECHA DATETIME,
-	TOTAL DECIMAL(10, 2),
-	IDSESION INT,
-	FOREIGN KEY (IDUSUARIO) REFERENCES USUARIOS(IDUSUARIO),
-	FOREIGN KEY (IDSESION) REFERENCES SESION(IDSESION)
-);
+/* insert rol de ejemplo */
+INSERT INTO Roles(Nombre, Descripcion)
+VALUES('Cliente','Usuario normal, sin privilegios')
 
--- Tabla GRUPO_ASIENTOS
-CREATE TABLE GRUPO_ASIENTOS (
-	IDGRUPO INT IDENTITY(1,1) PRIMARY KEY,
-	DESCRIPCION NVARCHAR(50),
-	PRECIO DECIMAL(10, 2)
-);
 
--- Tabla ASIENTOS
-CREATE TABLE ASIENTOS (
-	IDASIENTO INT IDENTITY(1,1) PRIMARY KEY,
-	IDSALA INT,
-	NUM_ASIENTO INT,
-	ESTADO CHAR(1),
-	IDGRUPO INT,
-	FOREIGN KEY (IDSALA) REFERENCES SALA(IDSALA),
-	FOREIGN KEY (IDGRUPO) REFERENCES GRUPO_ASIENTOS(IDGRUPO)
-);
+;
 
--- Tabla LINEA
-CREATE TABLE LINEA (
-	IDLINEA INT IDENTITY(1,1) PRIMARY KEY,
-	IDFACTURA UNIQUEIDENTIFIER,
-	IDASIENTO INT,
-	FOREIGN KEY (IDFACTURA) REFERENCES FACTURAS(IDFACTURA),
-	FOREIGN KEY (IDASIENTO) REFERENCES ASIENTOS(IDASIENTO)
-);
-
--- Tabla OPINIONES
-CREATE TABLE OPINIONES (
-	IDOPINION INT IDENTITY(1,1) PRIMARY KEY,
-	IDUSUARIO INT,
-	IDPELICULA INT,
-	COMENTARIO NVARCHAR(MAX),
-	FECHACOMENTARIO DATETIME,
-	FOREIGN KEY (IDUSUARIO) REFERENCES USUARIOS(IDUSUARIO),
-	FOREIGN KEY (IDPELICULA) REFERENCES PELICULAS(IDPELICULA)
-);
-
--- Insert OPINIONES
-INSERT INTO OPINIONES (IDUSUARIO, IDPELICULA, COMENTARIO, FECHACOMENTARIO) 
-VALUES 
-(1, 1, 'Película increíble, te hace pensar.', GETDATE()),
-(2, 2, 'Una obra maestra del cine.', GETDATE()),
-(3, 3, 'Muy divertida y con mucho corazón.', GETDATE());
+/* insert usuario de ejemplo, requiere al menos 1 rol previo */
+INSERT INTO Usuarios(Nombre, Apellidos, DNI, Email, Contrasenia, Telefono, IdRol)
+VALUES('Juan','Hernandez Gimenez', '123456789M','a@a.com','password123','123456789',1);
