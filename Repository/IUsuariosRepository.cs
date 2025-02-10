@@ -9,6 +9,5 @@ namespace Cinema.Repositories
         Task AddAsync(Usuarios usuario);
         Task UpdateAsync(Usuarios usuario);
         Task DeleteAsync(int id);
-        Task InicializarDatosAsync();      
     }
 }
