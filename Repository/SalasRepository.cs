@@ -20,7 +20,7 @@ namespace Cinema.Repositories
             {
                 await connection.OpenAsync();
 
-                string query = "SELECT IDSALA, NOMBRE, CAPACIDAD FROM SALA";
+                string query = "SELECT IdSala, Nombre, Tipo, Capacidad, PrecioPorHora, IdTipoSala FROM Salas";
                 using (var command = new SqlCommand(query, connection))
                 {
                     using (var reader = await command.ExecuteReaderAsync())
@@ -31,7 +31,10 @@ namespace Cinema.Repositories
                             {
                                 IdSala = reader.GetInt32(0),
                                 Nombre = reader.GetString(1),
-                                Capacidad = reader.GetInt32(2),
+                                Tipo = reader.GetString(2),
+                                Capacidad = reader.GetInt32(3),
+                                PrecioPorHora = (double)reader.GetDecimal(4),
+                                IdTipoSala = reader.GetInt32(5)
                             };
 
                             salas.Add(sala);
@@ -50,7 +53,7 @@ namespace Cinema.Repositories
             {
                 await connection.OpenAsync();
 
-                string query = "SELECT IDSALA, NOMBRE, CAPACIDAD FROM SALA WHERE IDSALA = @Id";
+                             string query = "SELECT IdSala, Nombre, Tipo, Capacidad, PrecioPorHora, IdTipoSala FROM Salas WHERE IdSala = @Id";
                 using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@Id", id);
@@ -63,7 +66,10 @@ namespace Cinema.Repositories
                             {
                                 IdSala = reader.GetInt32(0),
                                 Nombre = reader.GetString(1),
-                                Capacidad = reader.GetInt32(2),
+                                Tipo = reader.GetString(2),
+                                Capacidad = reader.GetInt32(3),
+                                PrecioPorHora = (double)reader.GetDecimal(4),
+                                IdTipoSala = reader.GetInt32(5)
                             };
                         }
                     }
@@ -78,12 +84,14 @@ namespace Cinema.Repositories
             {
                 await connection.OpenAsync();
 
-                string query = "INSERT INTO SALA (NOMBRE, CAPACIDAD) VALUES (@Nombre, @Capacidad)";
+                string query = "INSERT INTO Salas (Nombre, Tipo, Capacidad, PrecioPorHora, IdTipoSala) VALUES (@Nombre, @Tipo, @Capacidad, @PrecioPorHora, @IdTipoSala)";
                 using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@Nombre", sala.Nombre);
+                    command.Parameters.AddWithValue("@Tipo", sala.Tipo);
                     command.Parameters.AddWithValue("@Capacidad", sala.Capacidad);
-
+                    command.Parameters.AddWithValue("@PrecioPorHora", sala.PrecioPorHora);
+                    command.Parameters.AddWithValue("@IdTipoSala", sala.IdTipoSala);
                     await command.ExecuteNonQueryAsync();
                 }
             }
@@ -95,12 +103,16 @@ namespace Cinema.Repositories
             {
                 await connection.OpenAsync();
 
-                string query = "UPDATE SALA SET NOMBRE = @Nombre WHERE IDSALA = @Id";
+                string query = @"UPDATE Salas SET Nombre = @Nombre, Tipo = @Tipo, Capacidad = @Capacidad, PrecioPorHora = @PrecioPorHora, IdTipoSala = @IdTipoSala WHERE IdSala = @IdSala";
                 using (var command = new SqlCommand(query, connection))
                 {
 
-                    command.Parameters.AddWithValue("@Id", sala.IdSala);
+                    command.Parameters.AddWithValue("@IdSala", sala.IdSala);
                     command.Parameters.AddWithValue("@Nombre", sala.Nombre);
+                    command.Parameters.AddWithValue("@Tipo", sala.Tipo);
+                    command.Parameters.AddWithValue("@Capacidad", sala.Capacidad);
+                    command.Parameters.AddWithValue("@PrecioPorHora", sala.PrecioPorHora);
+                    command.Parameters.AddWithValue("@IdTipoSala", sala.IdTipoSala);
 
                     await command.ExecuteNonQueryAsync();
                 }
@@ -113,7 +125,7 @@ namespace Cinema.Repositories
             {
                 await connection.OpenAsync();
 
-                string query = "DELETE FROM SALA WHERE IDSALA = @Id";
+                string query = "DELETE FROM Salas WHERE IdSala = @Id";
                 using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@Id", id);

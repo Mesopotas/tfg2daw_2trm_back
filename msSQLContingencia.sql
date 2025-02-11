@@ -53,6 +53,9 @@ CREATE TABLE TipoSalas (
     Nombre NVARCHAR(100)
 );
 
+INSERT INTO TipoSalas(Nombre)
+VALUES('Sala privada')
+
 -- Tabla de Salas
 CREATE TABLE Salas (
     IdSala INT IDENTITY(1,1) PRIMARY KEY,
