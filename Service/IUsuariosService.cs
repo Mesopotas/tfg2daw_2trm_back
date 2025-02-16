@@ -1,6 +1,6 @@
 using Models;
 
-namespace Cinema.Service
+namespace CoWorking.Service
 {
     public interface IUsuariosService
     {

@@ -3,10 +3,10 @@ using Models;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Cinema.Repositories;
-using Cinema.Service;
+using CoWorking.Repositories;
+using CoWorking.Service;
 
-namespace Cinema.Service
+namespace CoWorking.Service
 {
     public class SalasService : ISalasService
     {

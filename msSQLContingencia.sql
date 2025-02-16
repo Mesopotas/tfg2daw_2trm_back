@@ -20,99 +20,69 @@ CREATE DATABASE CoworkingDB;
 
 USE CoworkingDB;
 
--- Tabla roles Usuarios
 CREATE TABLE Roles (
     IdRol INT IDENTITY(1,1) PRIMARY KEY,
-    Nombre NVARCHAR(30),
+    Nombre NVARCHAR(100),
     Descripcion NVARCHAR(255)
 );
 
--- Tabla de Usuarios
 CREATE TABLE Usuarios (
     IdUsuario INT IDENTITY(1,1) PRIMARY KEY,
     Nombre NVARCHAR(100),
-    Apellidos NVARCHAR(200),
-    DNI NVARCHAR(16),
+    Apellido NVARCHAR(100),
     Email NVARCHAR(255),
     Contrasenia NVARCHAR(255),
-    Telefono NVARCHAR(15),
     FechaRegistro DATETIME DEFAULT GETDATE(),
     IdRol INT,
     FOREIGN KEY (IdRol) REFERENCES Roles(IdRol)
 );
 
-/* PROVISIONAL, NO IMPLEMENTADO DE MOMENTO
-CREATE TABLE Mesas (
-    IdMesa INT IDENTITY(1,1) PRIMARY KEY,
-    NumAsientos INT -- numero de asientos que hay por cada mesa
-);
-*/
--- Tabla TipoSalas
 CREATE TABLE TipoSalas (
     IdTipoSala INT IDENTITY(1,1) PRIMARY KEY,
     Nombre NVARCHAR(100)
 );
 
-INSERT INTO TipoSalas(Nombre)
-VALUES('Sala privada')
-
--- Tabla de Salas
-CREATE TABLE Salas (
+CREATE TABLE Sala (
     IdSala INT IDENTITY(1,1) PRIMARY KEY,
     Nombre NVARCHAR(100),
-    Tipo NVARCHAR(50) DEFAULT 'Privada',
     Capacidad INT,
-    PrecioPorHora DECIMAL(10,2),
     IdTipoSala INT,
     FOREIGN KEY (IdTipoSala) REFERENCES TipoSalas(IdTipoSala)
 );
 
+CREATE TABLE Mesas (
+    IdMesa INT IDENTITY(1,1) PRIMARY KEY,
+    NumAsientos INT DEFAULT 4,
+    IdSala INT,
+    FOREIGN KEY (IdSala) REFERENCES Sala(IdSala)
+);
 
--- Tabla de Asientos
 CREATE TABLE Asientos (
     IdAsiento INT IDENTITY(1,1) PRIMARY KEY,
     NumAsiento INT,
-    Estado CHAR DEFAULT '0', -- 0 será disponible, 1 será ocupado, y 2 será bloqueado por administrador
-    IdSala INT,
-    FOREIGN KEY (IdSala) REFERENCES Salas(IdSala)
+    Estado NVARCHAR(50),
+    Precio DECIMAL(10,2),
+    IdMesa INT,
+    FOREIGN KEY (IdMesa) REFERENCES Mesas(IdMesa)
 );
 
--- Tabla de Reservas
+CREATE TABLE Lineas (
+    IdLinea INT IDENTITY(1,1) PRIMARY KEY,
+    IdAsiento INT,
+    FOREIGN KEY (IdAsiento) REFERENCES Asientos(IdAsiento)
+);
+
 CREATE TABLE Reservas (
     IdReserva INT IDENTITY(1,1) PRIMARY KEY,
-    UsuarioID INT,
-    SalaID INT,
-    Fecha DATE,
-    HoraInicio DATETIME,
-    HorasReservadas INT,
-    PrecioReserva DECIMAL(10,2),
-    FOREIGN KEY (UsuarioID) REFERENCES Usuarios(IdUsuario),
-    FOREIGN KEY (SalaID) REFERENCES Salas(IdSala)
-);
-
--- Tabla de Reservas de Asientos
-CREATE TABLE ReservasAsientos (
-    IdReservaAsiento INT IDENTITY(1,1) PRIMARY KEY,
-    ReservaID INT,
-    AsientoID INT,
-    FOREIGN KEY (ReservaID) REFERENCES Reservas(IdReserva),
-    FOREIGN KEY (AsientoID) REFERENCES Asientos(IdAsiento)
+    IdUsuario INT,
+    IdLinea INT,
+    FOREIGN KEY (IdUsuario) REFERENCES Usuarios(IdUsuario),
+    FOREIGN KEY (IdLinea) REFERENCES Lineas(IdLinea)
 );
 
 CREATE TABLE Facturas (
-    IdFactura INT IDENTITY(1,1) PRIMARY KEY,
-    IdReservaAsiento INT,
-    FOREIGN KEY(IdReservaAsiento) REFERENCES ReservasAsientos(IdReservaAsiento)
-)
-
-
-/* insert rol de ejemplo */
-INSERT INTO Roles(Nombre, Descripcion)
-VALUES('Cliente','Usuario normal, sin privilegios')
-
-
-;
-
-/* insert usuario de ejemplo, requiere al menos 1 rol previo */
-INSERT INTO Usuarios(Nombre, Apellidos, DNI, Email, Contrasenia, Telefono, IdRol)
-VALUES('Juan','Hernandez Gimenez', '123456789M','a@a.com','password123','123456789',1);
+    IdFactura UNIQUEIDENTIFIER DEFAULT NEWID() PRIMARY KEY,
+    IdReserva INT,
+    Precio DECIMAL(10,2),
+    FOREIGN KEY (IdReserva) REFERENCES Reservas(IdReserva)
+);

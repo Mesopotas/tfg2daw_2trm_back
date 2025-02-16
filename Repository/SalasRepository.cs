@@ -1,7 +1,7 @@
 using Microsoft.Data.SqlClient;
 using Models;
 
-namespace Cinema.Repositories
+namespace CoWorking.Repositories
 {
     public class SalasRepository : ISalasRepository
     {

@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
-using Cinema.Repositories;
-using Cinema.Service;
+using CoWorking.Repositories;
+using CoWorking.Service;
 using Models;
 
-namespace Cinema.Controllers
+namespace CoWorking.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

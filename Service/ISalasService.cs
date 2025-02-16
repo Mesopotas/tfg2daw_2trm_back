@@ -1,6 +1,6 @@
 using Models;
 
-namespace Cinema.Repositories
+namespace CoWorking.Repositories
 {
     public interface ISalasService
     {
