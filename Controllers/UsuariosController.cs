@@ -56,11 +56,8 @@ namespace CoWorking.Controllers
             }
             existingUsuario.Nombre = updatedUsuarios.Nombre;
             existingUsuario.Apellidos = updatedUsuarios.Apellidos;
-            existingUsuario.DNI = updatedUsuarios.DNI;
             existingUsuario.Email = updatedUsuarios.Email;
             existingUsuario.Contrasenia = updatedUsuarios.Contrasenia;
-            existingUsuario.Telefono = updatedUsuarios.Telefono;
-            existingUsuario.FechaRegistro = updatedUsuarios.FechaRegistro;
             existingUsuario.IdRol = updatedUsuarios.IdRol;
 
 

@@ -48,11 +48,6 @@ namespace CoWorking.Service
            //return NoContent();
         }
 
-        public async Task InicializarDatosAsync()
-        {
-
-
-        }
 
     }
 }

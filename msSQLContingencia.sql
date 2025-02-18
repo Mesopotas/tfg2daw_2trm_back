@@ -15,6 +15,12 @@
 
 -- CONSULTAS PARA LA CREACION DE LA BASE DE DATOS
 
+/* PARA VER LAS TABLAS DE LA BBDD
+USE CoWorkingDB;
+SELECT * FROM information_schema.tables
+WHERE table_type = 'BASE TABLE';
+*/
+
 -- Creación de la base de datos
 CREATE DATABASE CoworkingDB;
 
@@ -39,7 +45,8 @@ CREATE TABLE Roles (
 
 -- INSERT 2 PRIMEROS ROLES INICIALES
 INSERT INTO Roles (Nombre, Descripcion)
-VALUES ('Admin', 'Rol con privilegios avanzados para gestión'),
+VALUES ('Admin', 'Rol con privilegios avanzados para gestión');
+INSERT INTO Roles (Nombre, Descripcion)
 VALUES ('Cliente', 'Rol limitado para consumidores');
 
 
