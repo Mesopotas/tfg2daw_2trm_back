@@ -20,20 +20,37 @@ CREATE DATABASE CoworkingDB;
 
 USE CoworkingDB;
 
+
+CREATE TABLE Ubicaciones (
+    IdUbicacion INT IDENTITY(1,1) PRIMARY KEY,
+    Pais NVARCHAR(100),
+    Ciudad NVARCHAR(100),
+    Direccion NVARCHAR(255),
+    CodigoPostal NVARCHAR(20),
+    Planta NVARCHAR(50), -- suponiendo que pueda haber planta B por ejemplo, no siendo todas numericas
+    Detalles NVARCHAR(255)
+);
+
 CREATE TABLE Roles (
     IdRol INT IDENTITY(1,1) PRIMARY KEY,
     Nombre NVARCHAR(100),
     Descripcion NVARCHAR(255)
 );
 
+-- INSERT 2 PRIMEROS ROLES INICIALES
+INSERT INTO Roles (Nombre, Descripcion)
+VALUES ('Admin', 'Rol con privilegios avanzados para gestión'),
+VALUES ('Cliente', 'Rol limitado para consumidores');
+
+
 CREATE TABLE Usuarios (
     IdUsuario INT IDENTITY(1,1) PRIMARY KEY,
     Nombre NVARCHAR(100),
-    Apellido NVARCHAR(100),
+    Apellidos NVARCHAR(255),
     Email NVARCHAR(255),
     Contrasenia NVARCHAR(255),
     FechaRegistro DATETIME DEFAULT GETDATE(),
-    IdRol INT,
+    IdRol INT DEFAULT 2, -- rol de id 2 será Usuario normal (cliente)
     FOREIGN KEY (IdRol) REFERENCES Roles(IdRol)
 );
 
@@ -42,19 +59,21 @@ CREATE TABLE TipoSalas (
     Nombre NVARCHAR(100)
 );
 
-CREATE TABLE Sala (
+CREATE TABLE Salas (
     IdSala INT IDENTITY(1,1) PRIMARY KEY,
     Nombre NVARCHAR(100),
     Capacidad INT,
     IdTipoSala INT,
-    FOREIGN KEY (IdTipoSala) REFERENCES TipoSalas(IdTipoSala)
+    IdUbicacion INT,
+    FOREIGN KEY (IdTipoSala) REFERENCES TipoSalas(IdTipoSala),
+    FOREIGN KEY (IdUbicacion) REFERENCES Ubicaciones(IdUbicacion)
 );
 
 CREATE TABLE Mesas (
     IdMesa INT IDENTITY(1,1) PRIMARY KEY,
     NumAsientos INT DEFAULT 4,
     IdSala INT,
-    FOREIGN KEY (IdSala) REFERENCES Sala(IdSala)
+    FOREIGN KEY (IdSala) REFERENCES Salas(IdSala)
 );
 
 CREATE TABLE Asientos (
