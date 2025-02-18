@@ -11,6 +11,9 @@ builder.Services.AddScoped<IUsuariosRepository, UsuariosRepository>(provider =>
 builder.Services.AddScoped<ISalasRepository, SalasRepository>(provider =>
     new SalasRepository(connectionString));
 
+    builder.Services.AddScoped<IReservasRepository, ReservasRepository>(provider =>
+    new ReservasRepository(connectionString));
+
 // Add services to the container.
 builder.Services.AddControllers();
 
@@ -30,6 +33,8 @@ builder.Services.AddSwaggerGen();
 // Add services
 builder.Services.AddScoped<IUsuariosService, UsuariosService>();
 builder.Services.AddScoped<ISalasService, SalasService>();
+builder.Services.AddScoped<IReservasService, ReservasService>();
+
 
 var app = builder.Build();
 
