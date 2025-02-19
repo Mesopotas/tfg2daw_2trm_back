@@ -78,11 +78,11 @@ namespace CoWorking.Controllers
             return NoContent();
         }
 
-[HttpGet("clientes")]
-public async Task<ActionResult<List<UsuarioClienteDTO>>> GetClientes()
-{
-    var clientes = await _serviceUsuarios.GetClientesAsync();
-    return Ok(clientes);
-}
+        [HttpGet("clientes/{id}")]
+        public async Task<ActionResult<List<UsuarioClienteDTO>>> GetClientesById(int id)
+        {
+            var clientes = await _serviceUsuarios.GetClientesByIdAsync(id);
+            return Ok(clientes);
+        }
     }
 }   

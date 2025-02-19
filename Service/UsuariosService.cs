@@ -49,9 +49,9 @@ namespace CoWorking.Service
            //return NoContent();
         }
 
-        public async Task<List<UsuarioClienteDTO>> GetClientesAsync()
+        public async Task<List<UsuarioClienteDTO>> GetClientesByIdAsync(int id)
                 {
-                    return await _usuariosRepository.GetClientesAsync();
+                    return await _usuariosRepository.GetClientesByIdAsync(id);
                 }
 
             }
