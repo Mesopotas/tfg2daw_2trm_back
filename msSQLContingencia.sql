@@ -61,6 +61,10 @@ CREATE TABLE Usuarios (
     FOREIGN KEY (IdRol) REFERENCES Roles(IdRol)
 );
 
+CREATE TABLE Dias (
+    IdDia INT IDENTITY(1,1) PRIMARY KEY,
+    Dia DATETIME
+);
 CREATE TABLE TipoSalas (
     IdTipoSala INT IDENTITY(1,1) PRIMARY KEY,
     Nombre NVARCHAR(100)
@@ -70,6 +74,7 @@ CREATE TABLE Salas (
     IdSala INT IDENTITY(1,1) PRIMARY KEY,
     Nombre NVARCHAR(100),
     Capacidad INT,
+    ImagenLink NVARCHAR(255),
     IdTipoSala INT,
     IdUbicacion INT,
     FOREIGN KEY (IdTipoSala) REFERENCES TipoSalas(IdTipoSala),
@@ -95,6 +100,8 @@ CREATE TABLE Asientos (
 CREATE TABLE Lineas (
     IdLinea INT IDENTITY(1,1) PRIMARY KEY,
     IdAsiento INT,
+    IdDia INT,
+    FOREIGN KEY (IdDia) REFERENCES Dias(IdDia),
     FOREIGN KEY (IdAsiento) REFERENCES Asientos(IdAsiento)
 );
 
