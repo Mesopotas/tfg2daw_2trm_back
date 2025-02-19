@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using CoWorking.Repositories;
 using CoWorking.Service;
+using CoWorking.DTO;
 using Models;
 
 namespace CoWorking.Controllers
@@ -75,9 +76,13 @@ namespace CoWorking.Controllers
             }
             await _serviceUsuarios.DeleteAsync(id);
             return NoContent();
-
-
-
         }
-    }
+
+[HttpGet("clientes")]
+public async Task<ActionResult<List<UsuarioClienteDTO>>> GetClientes()
+{
+    var clientes = await _serviceUsuarios.GetClientesAsync();
+    return Ok(clientes);
 }
+    }
+}   

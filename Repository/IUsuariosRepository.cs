@@ -1,4 +1,5 @@
 using Models;
+using CoWorking.DTO;
 
 namespace CoWorking.Repositories
 {
@@ -9,5 +10,7 @@ namespace CoWorking.Repositories
         Task AddAsync(Usuarios usuario);
         Task UpdateAsync(Usuarios usuario);
         Task DeleteAsync(int id);
+        Task<List<UsuarioClienteDTO>> GetClientesAsync(); // para obtener solo los datos que el cliente le interesan, optimizando a su vez la api al manejar menos informacion que no es realmente util en un contexto determinado
+
     }
 }

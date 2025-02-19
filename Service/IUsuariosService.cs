@@ -1,4 +1,5 @@
 using Models;
+using CoWorking.DTO;
 
 namespace CoWorking.Service
 {
@@ -9,5 +10,6 @@ namespace CoWorking.Service
         Task AddAsync(Usuarios usuario);
         Task UpdateAsync(Usuarios usuario);
         Task DeleteAsync(int id);
+        Task<List<UsuarioClienteDTO>> GetClientesAsync();
     }
 }

@@ -1,5 +1,6 @@
 using Microsoft.Data.SqlClient;
 using Models;
+using CoWorking.DTO;
 
 namespace CoWorking.Repositories
 {
@@ -144,5 +145,36 @@ public async Task UpdateAsync(Usuarios usuario)
         }
 
   
+    
+
+   public async Task<List<UsuarioClienteDTO>> GetClientesAsync()
+        {
+            var clientes = new List<UsuarioClienteDTO>();
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+
+                string query = "SELECT Nombre, Apellidos, Email, Contrasenia FROM Usuarios";
+                using (var command = new SqlCommand(query, connection))
+                {
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            var cliente = new UsuarioClienteDTO
+                            {
+                                Nombre = reader.GetString(0),
+                                Apellidos = reader.GetString(1),
+                                Email = reader.GetString(2),
+                                Contrasenia = reader.GetString(3),
+                            };
+                            clientes.Add(cliente);
+                        }
+                    }
+                }
+            }
+            return clientes;
+        }
     }
 }
