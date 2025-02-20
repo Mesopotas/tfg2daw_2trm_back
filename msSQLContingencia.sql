@@ -63,7 +63,7 @@ CREATE TABLE Usuarios (
 
 CREATE TABLE Dias (
     IdDia INT IDENTITY(1,1) PRIMARY KEY,
-    Dia DATETIME
+    Dia DATE -- usar datetime cuando sea tratado en base a alquiler de horas, como ahora es solo dias completo DATE es mas adecuado
 );
 CREATE TABLE TipoSalas (
     IdTipoSala INT IDENTITY(1,1) PRIMARY KEY,
