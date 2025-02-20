@@ -82,7 +82,11 @@ namespace CoWorking.Controllers
         public async Task<ActionResult<List<UsuarioClienteDTO>>> GetClientesById(string email)
         {
             var clientes = await _serviceUsuarios.GetClientesByEmailAsync(email);
+            if (clientes.Count == 0)
+            {
+                return NotFound("No se encontró ninguna cuenta asociada a ese email.");
+            }
             return Ok(clientes);
         }
     }
-}   
+}
