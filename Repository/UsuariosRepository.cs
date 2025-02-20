@@ -147,7 +147,7 @@ namespace CoWorking.Repositories
 
 
 
-        public async Task<List<UsuarioClienteDTO>> GetClientesByIdAsync(int id)
+        public async Task<List<UsuarioClienteDTO>> GetClientesByEmailAsync(string Email)
         {
             var clientes = new List<UsuarioClienteDTO>();
 
@@ -155,10 +155,10 @@ namespace CoWorking.Repositories
             {
                 await connection.OpenAsync();
 
-                string query = "SELECT Nombre, Apellidos, Email, Contrasenia FROM Usuarios WHERE idUsuario = @Id";
+                string query = "SELECT Nombre, Apellidos, Email, Contrasenia FROM Usuarios WHERE Email = @Email";
                 using (var command = new SqlCommand(query, connection))
                 {
-                    command.Parameters.AddWithValue("@Id", id);
+                    command.Parameters.AddWithValue("@Email".ToLower(), Email);
 
                     using (var reader = await command.ExecuteReaderAsync())
                     {
