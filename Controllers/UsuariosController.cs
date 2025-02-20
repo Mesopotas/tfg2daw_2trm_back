@@ -88,5 +88,17 @@ namespace CoWorking.Controllers
             }
             return Ok(clientes);
         }
+
+
+        [HttpGet("clientes/{email}/{contrasenia}")]
+        public async Task<ActionResult<List<UsuarioClienteDTO>>> ComprobarCredencialesAsync(string email, string contrasenia)
+        {
+            var clientes = await _serviceUsuarios.ComprobarCredencialesAsync(email, contrasenia);
+            if (clientes.Count == 0)
+            {
+                return NotFound("Credenciales incorrectas.");
+            }
+            return Ok(clientes);
+        }
     }
 }

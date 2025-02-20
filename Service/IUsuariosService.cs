@@ -11,5 +11,7 @@ namespace CoWorking.Service
         Task UpdateAsync(Usuarios usuario);
         Task DeleteAsync(int id);
         Task<List<UsuarioClienteDTO>> GetClientesByEmailAsync(string email);
+        Task<List<UsuarioClienteDTO>> ComprobarCredencialesAsync(string email, string contrasenia);
+
     }
 }
