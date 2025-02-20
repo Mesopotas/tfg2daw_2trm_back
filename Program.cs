@@ -6,7 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("cinema");
 
 builder.Services.AddScoped<IUsuariosRepository, UsuariosRepository>(provider =>
-    new UsuariosRepository(connectionString));
+        new UsuariosRepository(connectionString));
 
 builder.Services.AddScoped<ISalasRepository, SalasRepository>(provider =>
     new SalasRepository(connectionString));

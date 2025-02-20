@@ -96,7 +96,7 @@ namespace CoWorking.Repositories
                 {
                     command.Parameters.AddWithValue("@Nombre", usuario.Nombre);
                     command.Parameters.AddWithValue("@Apellidos", usuario.Apellidos);
-                    command.Parameters.AddWithValue("@Email", usuario.Email);
+                    command.Parameters.AddWithValue("@Email", usuario.Email.ToLower());
                     command.Parameters.AddWithValue("@Contrasenia", usuario.Contrasenia);
                     command.Parameters.AddWithValue("@FechaRegistro", DateTime.Now); // dado que es un nuevo registro a la bbdd y por tanto nuevo usuario, su fecha de unión será siempre la fecha actual de ese momento  
                     command.Parameters.AddWithValue("@IdRol", usuario.IdRol);
@@ -147,7 +147,7 @@ namespace CoWorking.Repositories
 
 
 
-        public async Task<List<UsuarioClienteDTO>> GetClientesByIdAsync(int id)
+        public async Task<List<UsuarioClienteDTO>> GetClientesByEmailAsync(string Email)
         {
             var clientes = new List<UsuarioClienteDTO>();
 
@@ -155,10 +155,10 @@ namespace CoWorking.Repositories
             {
                 await connection.OpenAsync();
 
-                string query = "SELECT Nombre, Apellidos, Email, Contrasenia FROM Usuarios WHERE idUsuario = @Id";
+                string query = "SELECT Nombre, Apellidos, Email, Contrasenia FROM Usuarios WHERE Email = @Email";
                 using (var command = new SqlCommand(query, connection))
                 {
-                    command.Parameters.AddWithValue("@Id", id);
+                    command.Parameters.AddWithValue("@Email".ToLower(), Email);
 
                     using (var reader = await command.ExecuteReaderAsync())
                     {
@@ -169,7 +169,39 @@ namespace CoWorking.Repositories
                                 Nombre = reader.GetString(0),
                                 Apellidos = reader.GetString(1),
                                 Email = reader.GetString(2),
-                                Contrasenia = reader.GetString(3),
+                                Contrasenia = reader.GetString(3)
+                            };
+                            clientes.Add(cliente);
+                        }
+                    }
+                }
+            }
+            return clientes;
+        }
+          public async Task<List<UsuarioClienteDTO>> ComprobarCredencialesAsync(string Email, string Contrasenia)
+        {
+            var clientes = new List<UsuarioClienteDTO>();
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+
+                string query = "SELECT Nombre, Apellidos, Email FROM Usuarios WHERE Email = @Email AND Contrasenia = @Contrasenia";
+                using (var command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@Email".ToLower(), Email);
+                    command.Parameters.AddWithValue("@Contrasenia", Contrasenia);
+
+
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            var cliente = new UsuarioClienteDTO
+                            {
+                                Nombre = reader.GetString(0),
+                                Apellidos = reader.GetString(1),
+                                Email = reader.GetString(2)
                             };
                             clientes.Add(cliente);
                         }

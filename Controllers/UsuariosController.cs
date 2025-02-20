@@ -78,11 +78,27 @@ namespace CoWorking.Controllers
             return NoContent();
         }
 
-        [HttpGet("clientes/{id}")]
-        public async Task<ActionResult<List<UsuarioClienteDTO>>> GetClientesById(int id)
+        [HttpGet("clientes/{email}")]
+        public async Task<ActionResult<List<UsuarioClienteDTO>>> GetClientesById(string email)
         {
-            var clientes = await _serviceUsuarios.GetClientesByIdAsync(id);
+            var clientes = await _serviceUsuarios.GetClientesByEmailAsync(email);
+            if (clientes.Count == 0)
+            {
+                return NotFound("No se encontró ninguna cuenta asociada a ese email.");
+            }
+            return Ok(clientes);
+        }
+
+
+        [HttpGet("clientes/{email}/{contrasenia}")]
+        public async Task<ActionResult<List<UsuarioClienteDTO>>> ComprobarCredencialesAsync(string email, string contrasenia)
+        {
+            var clientes = await _serviceUsuarios.ComprobarCredencialesAsync(email, contrasenia);
+            if (clientes.Count == 0)
+            {
+                return NotFound("Credenciales incorrectas.");
+            }
             return Ok(clientes);
         }
     }
-}   
+}
