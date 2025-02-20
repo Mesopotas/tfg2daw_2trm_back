@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CoWorking.Repositories;
+using CoWorking.DTO;
 using CoWorking.Service;
 
 namespace CoWorking.Service
@@ -48,6 +49,10 @@ namespace CoWorking.Service
            //return NoContent();
         }
 
+        public async Task<List<UsuarioClienteDTO>> GetClientesByIdAsync(int id)
+                {
+                    return await _usuariosRepository.GetClientesByIdAsync(id);
+                }
 
-    }
+            }
 }

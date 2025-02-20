@@ -1,5 +1,6 @@
 using Microsoft.Data.SqlClient;
 using Models;
+using CoWorking.DTO;
 
 namespace CoWorking.Repositories
 {
@@ -83,49 +84,49 @@ namespace CoWorking.Repositories
             return usuario;
         }
 
-     public async Task AddAsync(Usuarios usuario)
-{
-    using (var connection = new SqlConnection(_connectionString))
-    {
-        await connection.OpenAsync();
-
-        string query = "INSERT INTO Usuarios (Nombre, Apellidos, Email, Contrasenia, FechaRegistro, IdRol) VALUES (@Nombre, @Apellidos, @Email, @Contrasenia, @FechaRegistro, @IdRol)";
-        
-        using (var command = new SqlCommand(query, connection))
+        public async Task AddAsync(Usuarios usuario)
         {
-            command.Parameters.AddWithValue("@Nombre", usuario.Nombre);
-            command.Parameters.AddWithValue("@Apellidos", usuario.Apellidos);
-            command.Parameters.AddWithValue("@Email", usuario.Email);
-            command.Parameters.AddWithValue("@Contrasenia", usuario.Contrasenia);
-            command.Parameters.AddWithValue("@FechaRegistro", DateTime.Now); // dado que es un nuevo registro a la bbdd y por tanto nuevo usuario, su fecha de unión será siempre la fecha actual de ese momento  
-            command.Parameters.AddWithValue("@IdRol", usuario.IdRol);
-            await command.ExecuteNonQueryAsync();
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+
+                string query = "INSERT INTO Usuarios (Nombre, Apellidos, Email, Contrasenia, FechaRegistro, IdRol) VALUES (@Nombre, @Apellidos, @Email, @Contrasenia, @FechaRegistro, @IdRol)";
+
+                using (var command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@Nombre", usuario.Nombre);
+                    command.Parameters.AddWithValue("@Apellidos", usuario.Apellidos);
+                    command.Parameters.AddWithValue("@Email", usuario.Email);
+                    command.Parameters.AddWithValue("@Contrasenia", usuario.Contrasenia);
+                    command.Parameters.AddWithValue("@FechaRegistro", DateTime.Now); // dado que es un nuevo registro a la bbdd y por tanto nuevo usuario, su fecha de unión será siempre la fecha actual de ese momento  
+                    command.Parameters.AddWithValue("@IdRol", usuario.IdRol);
+                    await command.ExecuteNonQueryAsync();
+                }
+            }
         }
-    }
-}
 
-public async Task UpdateAsync(Usuarios usuario)
-{
-    using (var connection = new SqlConnection(_connectionString))
-    {
-        await connection.OpenAsync();
+        public async Task UpdateAsync(Usuarios usuario)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
 
-        // La columna FechaRegistro no está incluida ya que no debe ser modificada
-        string query = "UPDATE Usuarios SET nombre = @Nombre, apellidos = @Apellidos,  email = @Email, contrasenia = @Contrasenia, idRol = @IdRol WHERE idUsuario = @IdUsuario";
+                // La columna FechaRegistro no está incluida ya que no debe ser modificada
+                string query = "UPDATE Usuarios SET nombre = @Nombre, apellidos = @Apellidos,  email = @Email, contrasenia = @Contrasenia, idRol = @IdRol WHERE idUsuario = @IdUsuario";
                 // si el idRol asignado no existe dará error (Microsoft.Data.SqlClient.SqlException (0x80131904): The INSERT statement conflicted with the FOREIGN KEY constraint "FK__Usuarios__IdRol__276EDEB3". The conflict occurred in database "CoworkingDB", table "dbo.Roles", column 'IdRol'.)
 
-        using (var command = new SqlCommand(query, connection))
-        {
-            command.Parameters.AddWithValue("@IdUsuario", usuario.IdUsuario);
-            command.Parameters.AddWithValue("@Nombre", usuario.Nombre);
-            command.Parameters.AddWithValue("@Apellidos", usuario.Apellidos);
-            command.Parameters.AddWithValue("@Email", usuario.Email);
-            command.Parameters.AddWithValue("@Contrasenia", usuario.Contrasenia);
-            command.Parameters.AddWithValue("@IdRol", usuario.IdRol);
-            await command.ExecuteNonQueryAsync();
+                using (var command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@IdUsuario", usuario.IdUsuario);
+                    command.Parameters.AddWithValue("@Nombre", usuario.Nombre);
+                    command.Parameters.AddWithValue("@Apellidos", usuario.Apellidos);
+                    command.Parameters.AddWithValue("@Email", usuario.Email);
+                    command.Parameters.AddWithValue("@Contrasenia", usuario.Contrasenia);
+                    command.Parameters.AddWithValue("@IdRol", usuario.IdRol);
+                    await command.ExecuteNonQueryAsync();
+                }
+            }
         }
-    }
-}
 
         public async Task DeleteAsync(int id)
         {
@@ -143,6 +144,39 @@ public async Task UpdateAsync(Usuarios usuario)
             }
         }
 
-  
+
+
+
+        public async Task<List<UsuarioClienteDTO>> GetClientesByIdAsync(int id)
+        {
+            var clientes = new List<UsuarioClienteDTO>();
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+
+                string query = "SELECT Nombre, Apellidos, Email, Contrasenia FROM Usuarios WHERE idUsuario = @Id";
+                using (var command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@Id", id);
+
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            var cliente = new UsuarioClienteDTO
+                            {
+                                Nombre = reader.GetString(0),
+                                Apellidos = reader.GetString(1),
+                                Email = reader.GetString(2),
+                                Contrasenia = reader.GetString(3),
+                            };
+                            clientes.Add(cliente);
+                        }
+                    }
+                }
+            }
+            return clientes;
+        }
     }
 }
