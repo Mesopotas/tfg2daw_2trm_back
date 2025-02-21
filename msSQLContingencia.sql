@@ -23,99 +23,166 @@ WHERE table_type = 'BASE TABLE';
 
 -- Creación de la base de datos
 CREATE DATABASE CoworkingDB;
-
 USE CoworkingDB;
 
-
-CREATE TABLE Ubicaciones (
-    IdUbicacion INT IDENTITY(1,1) PRIMARY KEY,
-    Pais NVARCHAR(100),
-    Ciudad NVARCHAR(100),
-    Direccion NVARCHAR(255),
-    CodigoPostal NVARCHAR(20),
-    Planta NVARCHAR(50), -- suponiendo que pueda haber planta B por ejemplo, no siendo todas numericas
-    Detalles NVARCHAR(255)
+CREATE TABLE Sedes ( -- ubicacion fisica de la oficina
+    IdSede INT IDENTITY(1,1) PRIMARY KEY,
+    Pais VARCHAR(100),
+    Ciudad VARCHAR(100),
+    Direccion VARCHAR(250),
+    CodigoPostal VARCHAR(5),
+    Planta VARCHAR(100),
+    URL_Imagen VARCHAR(250), -- imagen de la localizacion
+    Observaciones VARCHAR(100)
 );
 
-CREATE TABLE Roles (
+CREATE TABLE TipoSalas ( -- privada o comun
+    IdTipoSala INT IDENTITY(1,1) PRIMARY KEY,
+    EsPrivada BIT DEFAULT 0, -- DEFAULT SERÁ FALSO, OSEA, PUBLICA
+    Descripcion VARCHAR(100)
+);
+
+    -- INSERT para los 2 tipos de sala iniciales
+    INSERT INTO TipoSalas (EsPrivada, Descripcion)
+    VALUES (0, 'Sala Publica'); -- EsPrivada = 0 osea False, tendrá ID = 1
+
+    INSERT INTO TipoSalas (EsPrivada, Descripcion)
+    VALUES (1, 'Sala Privada'); -- EsPrivada = 1 osea True, tendrá ID = 2
+
+
+CREATE TABLE Salas ( -- salas dentro de cada sede
+    IdSala INT IDENTITY(1,1) PRIMARY KEY,
+    Nombre VARCHAR(50),
+    URL_Imagen VARCHAR(250), --  imagen de la sala por dentro
+    Capacidad INT,
+    IdTipoSala INT,
+    IdSede INT,
+    Precio DECIMAL(10,2), -- precio sala privada o compartida
+    Bloqueado BIT DEFAULT 0, -- para el rol del admin de bloquear puestos de trabajo
+    FOREIGN KEY (IdSede) REFERENCES Sedes(IdSede),
+    FOREIGN KEY (IdTipoSala) REFERENCES TipoSalas(IdTipoSala)
+);
+
+CREATE TABLE ZonaTrabajo ( -- aforo dentro de cada sala y sus detalles
+    IdZonaTrabajo INT IDENTITY(1,1) PRIMARY KEY,
+    NumPuestosTrabajo INT,
+    Descripcion VARCHAR(250),
+    IdSala INT,
+    FOREIGN KEY (IdSala) REFERENCES Salas(IdSala)
+);
+
+CREATE TABLE TipoPuestoTrabajo ( -- define los tipos de puestos como silla, mesa, etc y su precio base a aplicar
+    IdTipoPuestoTrabajo INT IDENTITY(1,1) PRIMARY KEY,
+    Descripcion VARCHAR(200),
+    Precio DECIMAL(10,2)
+);
+
+CREATE TABLE PuestoTrabajo ( -- puestos de trabajo dentro de cada zona de trabajo, en principio de base solo para sillas a escoger, ampliandolo en un futuro a poder elegir lotes de mesas
+    IdPuestoTrabajo INT IDENTITY(1,1) PRIMARY KEY,
+    URL_Imagen VARCHAR(250), -- la imagen del componente, como mesas, sillas, etc para el fetch
+    Codigo INT,
+    Estado INT,
+    Capacidad INT,
+    TipoPuesto INT,
+    IdZonaTrabajo INT,
+    Bloqueado BIT DEFAULT 0, -- para el rol del admin de bloquear puestos de trabajo
+    FOREIGN KEY (IdZonaTrabajo) REFERENCES ZonaTrabajo(IdZonaTrabajo)
+);
+
+CREATE TABLE TramoHorario ( -- intervalos de tiempo en los que hay disponibilidad
+    IdTramoHorario INT IDENTITY(1,1) PRIMARY KEY,
+    HoraInicio VARCHAR(4),
+    HoraFin VARCHAR(4),
+    DiaSemanal INT
+);
+
+CREATE TABLE Disponibilidad ( -- disponibilidad de puestos de trabajo o salas en una hora espcifica
+    IdDisponibilidad INT IDENTITY(1,1) PRIMARY KEY,
+    Fecha DATETIME,
+    Estado BIT DEFAULT 1, -- por defecto estará disponible
+    IdTramoHorario INT,
+    IdSala INT,
+    IdPuestoTrabajo INT,
+    FOREIGN KEY (IdTramoHorario) REFERENCES TramoHorario(IdTramoHorario),
+    FOREIGN KEY (IdSala) REFERENCES Salas(IdSala),
+    FOREIGN KEY (IdPuestoTrabajo) REFERENCES PuestoTrabajo(IdPuestoTrabajo)
+);
+
+CREATE TABLE DetalleReserva ( -- reserva puestos de trabajo
+    IdDetalleReserva INT IDENTITY(1,1) PRIMARY KEY,
+    Descripcion VARCHAR(250),
+    IdPuestoTrabajo INT,
+    IdDisponibilidad INT,
+    FOREIGN KEY (IdPuestoTrabajo) REFERENCES PuestoTrabajo(IdPuestoTrabajo),
+    FOREIGN KEY (IdDisponibilidad) REFERENCES Disponibilidad(IdDisponibilidad)
+);
+
+CREATE TABLE Roles ( -- roles de usuario (admin y cliente de base)
     IdRol INT IDENTITY(1,1) PRIMARY KEY,
-    Nombre NVARCHAR(100),
-    Descripcion NVARCHAR(255)
+    Nombre VARCHAR(100),
+    Descripcion VARCHAR(255)
 );
 
 -- INSERT 2 PRIMEROS ROLES INICIALES
 INSERT INTO Roles (Nombre, Descripcion)
 VALUES ('Admin', 'Rol con privilegios avanzados para gestión');
+
 INSERT INTO Roles (Nombre, Descripcion)
 VALUES ('Cliente', 'Rol limitado para consumidores');
 
-
-CREATE TABLE Usuarios (
+CREATE TABLE Usuarios ( -- personas registradas en la plataforma
     IdUsuario INT IDENTITY(1,1) PRIMARY KEY,
     Nombre NVARCHAR(100),
     Apellidos NVARCHAR(255),
     Email NVARCHAR(255),
     Contrasenia NVARCHAR(255),
     FechaRegistro DATETIME DEFAULT GETDATE(),
-    IdRol INT DEFAULT 2, -- rol de id 2 será Usuario normal (cliente)
+    IdRol INT DEFAULT 2, -- rol de id 2 por defecto será Usuario normal (cliente)
     FOREIGN KEY (IdRol) REFERENCES Roles(IdRol)
 );
 
-CREATE TABLE Dias (
-    IdDia INT IDENTITY(1,1) PRIMARY KEY,
-    Dia DATE -- usar datetime cuando sea tratado en base a alquiler de horas, como ahora es solo dias completo DATE es mas adecuado
-);
-CREATE TABLE TipoSalas (
-    IdTipoSala INT IDENTITY(1,1) PRIMARY KEY,
-    Nombre NVARCHAR(100)
-);
-
-CREATE TABLE Salas (
-    IdSala INT IDENTITY(1,1) PRIMARY KEY,
-    Nombre NVARCHAR(100),
-    Capacidad INT,
-    ImagenLink NVARCHAR(255),
-    IdTipoSala INT,
-    IdUbicacion INT,
-    FOREIGN KEY (IdTipoSala) REFERENCES TipoSalas(IdTipoSala),
-    FOREIGN KEY (IdUbicacion) REFERENCES Ubicaciones(IdUbicacion)
-);
-
-CREATE TABLE Mesas (
-    IdMesa INT IDENTITY(1,1) PRIMARY KEY,
-    NumAsientos INT DEFAULT 4,
-    IdSala INT,
-    FOREIGN KEY (IdSala) REFERENCES Salas(IdSala)
-);
-
-CREATE TABLE Asientos (
-    IdAsiento INT IDENTITY(1,1) PRIMARY KEY,
-    NumAsiento INT,
-    Estado NVARCHAR(50),
-    Precio DECIMAL(10,2),
-    IdMesa INT,
-    FOREIGN KEY (IdMesa) REFERENCES Mesas(IdMesa)
-);
-
-CREATE TABLE Lineas (
-    IdLinea INT IDENTITY(1,1) PRIMARY KEY,
-    IdAsiento INT,
-    IdDia INT,
-    FOREIGN KEY (IdDia) REFERENCES Dias(IdDia),
-    FOREIGN KEY (IdAsiento) REFERENCES Asientos(IdAsiento)
-);
-
-CREATE TABLE Reservas (
+CREATE TABLE Reservas ( -- reservas realizadas por los usuarios
     IdReserva INT IDENTITY(1,1) PRIMARY KEY,
     IdUsuario INT,
-    IdLinea INT,
-    FOREIGN KEY (IdUsuario) REFERENCES Usuarios(IdUsuario),
-    FOREIGN KEY (IdLinea) REFERENCES Lineas(IdLinea)
+    Fecha DATETIME,
+    Descripcion VARCHAR(250),
+    DescuentoAplicado DECIMAL(10,2) DEFAULT 0,
+    FOREIGN KEY (IdUsuario) REFERENCES Usuarios(IdUsuario)
 );
 
-CREATE TABLE Facturas (
-    IdFactura UNIQUEIDENTIFIER DEFAULT NEWID() PRIMARY KEY,
+CREATE TABLE Lineas ( -- reserva relacionada con sus detalles especificos, aquello que veria el usuario a modo factura
+    IdLinea UNIQUEIDENTIFIER DEFAULT NEWID() PRIMARY KEY,
     IdReserva INT,
-    Precio DECIMAL(10,2),
-    FOREIGN KEY (IdReserva) REFERENCES Reservas(IdReserva)
+    IdDetalleReserva INT,
+    FOREIGN KEY (IdReserva) REFERENCES Reservas(IdReserva),
+    FOREIGN KEY (IdDetalleReserva) REFERENCES DetalleReserva(IdDetalleReserva)
 );
+
+/* AÑADIR PROXIMAMENTE CONFORME TODO ESTE HECHO 
+CREATE TABLE Descuentos ( 
+    IdDescuento INT IDENTITY(1,1) PRIMARY KEY,
+    Descripcion VARCHAR(200),
+    Porcentaje DECIMAL(5,2),
+    MinHoras INT,
+    MinAsientos INT
+);
+*/
+
+
+/* BORRAR TODAS LAS TABLAS
+DROP TABLE Lineas;
+DROP TABLE DetalleReserva;
+DROP TABLE Reservas;
+DROP TABLE Disponibilidad;
+DROP TABLE ZonaTrabajo;
+DROP TABLE PuestoTrabajo;
+DROP TABLE TipoPuestoTrabajo;
+DROP TABLE Salas;
+DROP TABLE TipoSalas;
+DROP TABLE Sedes;
+DROP TABLE Usuarios;
+DROP TABLE Roles;
+DROP TABLE TramoHorario;
+
+
+*/
