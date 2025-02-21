@@ -6,5 +6,6 @@ namespace CoWorking.DTO
         public string Apellidos { get; set; }
         public string Email { get; set; }
         public string Contrasenia { get; set; }
+        public string RolNombre { get; set; }
     }
 }
