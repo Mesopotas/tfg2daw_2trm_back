@@ -5,7 +5,7 @@ namespace Models;
 
 public class Sedes{
 
-    public int IdSedes{get; set;}
+    public int IdSede{get; set;}
     public string  Pais  {get; set;}
     public string  Ciudad {get; set;}
     public string  Direccion {get; set;}
@@ -14,9 +14,9 @@ public class Sedes{
     public string  Observaciones  {get; set;}
     public Sedes(){} // CONTRUCTOR VACIO INYECCION DE DEPENDENCIAS
 
-    public Sedes(int idSedes, string pais, string ciudad, string direccion, string codigoPostal, string planta, string observaciones){
+    public Sedes(int idSede, string pais, string ciudad, string direccion, string codigoPostal, string planta, string observaciones){
 
-        IdSedes = idSedes;
+        IdSede = idSede;
         Pais = pais;
         Ciudad = ciudad;
         Direccion = direccion;
