@@ -58,7 +58,7 @@ namespace CoWorking.Controllers
             existingSala.Nombre = updatedSalas.Nombre;
             existingSala.Capacidad = updatedSalas.Capacidad;
             existingSala.IdTipoSala = updatedSalas.IdTipoSala;
-            existingSala.IdSedes = updatedSalas.IdSedes;
+            existingSala.IdSede = updatedSalas.IdSede;
 
 
             await _serviceSalas.UpdateAsync(existingSala);

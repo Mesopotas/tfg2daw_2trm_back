@@ -9,16 +9,16 @@ public class Salas{
     public string  Nombre  {get; set;}
     public int  Capacidad {get; set;}
     public int  IdTipoSala {get; set;}
-    public int  IdSedes {get; set;}
+    public int  IdSede {get; set;}
     public Salas(){} // CONTRUCTOR VACIO INYECCION DE DEPENDENCIAS
 
-    public Salas(int idSala, string nombre, int capacidad, int idTipoSala, int idSedes){
+    public Salas(int idSala, string nombre, int capacidad, int idTipoSala, int idSede){
 
         IdSala = idSala;
         Nombre = nombre;
         Capacidad = capacidad;
         IdTipoSala = idTipoSala;
-        IdSedes = idSedes;
+        IdSede = idSede;
     }
 
 
