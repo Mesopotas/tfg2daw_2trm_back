@@ -3,7 +3,7 @@ using CoWorking.DTO;
 
 namespace CoWorking.Repositories
 {
-    public interface ITiposSalasRepository
+    public interface ITipoSalasRepository
     {
         Task<List<TipoSalas>> GetAllAsync();
         Task<TipoSalas?> GetByIdAsync(int id);
