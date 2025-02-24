@@ -19,7 +19,7 @@ public class Usuarios{
         Apellidos = apellidos;
         Email = email;
         Contrasenia = contrasenia;
-        FechaRegistro = DateTime.Now;
+        FechaRegistro = FechaRegistro;
         IdRol = idRol;
 
     }
