@@ -31,7 +31,7 @@ namespace CoWorking.Repositories
                             var tipoSala = new TipoSalas
                             {
                                 IdTipoSala = reader.GetInt32(0),
-                                Descripcion = reader.GetString(0),
+                                Descripcion = reader.GetString(1),
                             };
 
                             tipoSalas.Add(tipoSala);
@@ -62,7 +62,7 @@ namespace CoWorking.Repositories
                             tipoSala = new TipoSalas
                             {
                                 IdTipoSala = reader.GetInt32(0),
-                                Descripcion = reader.GetString(0),
+                                Descripcion = reader.GetString(1),
                             };
 
                         }
