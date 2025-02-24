@@ -36,17 +36,17 @@ CREATE TABLE Sedes ( -- ubicacion fisica de la oficina
     Observaciones VARCHAR(100)
 );
 
-CREATE TABLE TipoSalas ( -- privada o comun
+CREATE TABLE TiposSalas ( -- privada o comun
     IdTipoSala INT IDENTITY(1,1) PRIMARY KEY,
     EsPrivada BIT DEFAULT 0, -- DEFAULT SERÁ FALSO, OSEA, PUBLICA
     Descripcion VARCHAR(100)
 );
 
     -- INSERT para los 2 tipos de sala iniciales
-    INSERT INTO TipoSalas (EsPrivada, Descripcion)
+    INSERT INTO TiposSalas (EsPrivada, Descripcion)
     VALUES (0, 'Sala Publica'); -- EsPrivada = 0 osea False, tendrá ID = 1
 
-    INSERT INTO TipoSalas (EsPrivada, Descripcion)
+    INSERT INTO TiposSalas (EsPrivada, Descripcion)
     VALUES (1, 'Sala Privada'); -- EsPrivada = 1 osea True, tendrá ID = 2
 
 
@@ -60,10 +60,10 @@ CREATE TABLE Salas ( -- salas dentro de cada sede
     Precio DECIMAL(10,2), -- precio sala privada o compartida
     Bloqueado BIT DEFAULT 0, -- para el rol del admin de bloquear puestos de trabajo
     FOREIGN KEY (IdSede) REFERENCES Sedes(IdSede),
-    FOREIGN KEY (IdTipoSala) REFERENCES TipoSalas(IdTipoSala)
+    FOREIGN KEY (IdTipoSala) REFERENCES TiposSalas(IdTipoSala)
 );
 
-CREATE TABLE ZonaTrabajo ( -- aforo dentro de cada sala y sus detalles
+CREATE TABLE ZonasTrabajo ( -- aforo dentro de cada sala y sus detalles
     IdZonaTrabajo INT IDENTITY(1,1) PRIMARY KEY,
     NumPuestosTrabajo INT,
     Descripcion VARCHAR(250),
@@ -71,13 +71,13 @@ CREATE TABLE ZonaTrabajo ( -- aforo dentro de cada sala y sus detalles
     FOREIGN KEY (IdSala) REFERENCES Salas(IdSala)
 );
 
-CREATE TABLE TipoPuestoTrabajo ( -- define los tipos de puestos como silla, mesa, etc y su precio base a aplicar
+CREATE TABLE TiposPuestosTrabajo ( -- define los tipos de puestos como silla, mesa, etc y su precio base a aplicar
     IdTipoPuestoTrabajo INT IDENTITY(1,1) PRIMARY KEY,
     Descripcion VARCHAR(200),
     Precio DECIMAL(10,2)
 );
 
-CREATE TABLE PuestoTrabajo ( -- puestos de trabajo dentro de cada zona de trabajo, en principio de base solo para sillas a escoger, ampliandolo en un futuro a poder elegir lotes de mesas
+CREATE TABLE PuestosTrabajo ( -- puestos de trabajo dentro de cada zona de trabajo, en principio de base solo para sillas a escoger, ampliandolo en un futuro a poder elegir lotes de mesas
     IdPuestoTrabajo INT IDENTITY(1,1) PRIMARY KEY,
     URL_Imagen VARCHAR(250), -- la imagen del componente, como mesas, sillas, etc para el fetch
     Codigo INT,
@@ -85,36 +85,39 @@ CREATE TABLE PuestoTrabajo ( -- puestos de trabajo dentro de cada zona de trabaj
     Capacidad INT,
     TipoPuesto INT,
     IdZonaTrabajo INT,
+    IdTipoPuestoTrabajo INT,
     Bloqueado BIT DEFAULT 0, -- para el rol del admin de bloquear puestos de trabajo
-    FOREIGN KEY (IdZonaTrabajo) REFERENCES ZonaTrabajo(IdZonaTrabajo)
+    FOREIGN KEY (IdZonaTrabajo) REFERENCES ZonasTrabajo(IdZonaTrabajo),
+    FOREIGN KEY (IdTipoPuestoTrabajo) REFERENCES TiposPuestosTrabajo(IdTipoPuestoTrabajo)
+
 );
 
-CREATE TABLE TramoHorario ( -- intervalos de tiempo en los que hay disponibilidad
+CREATE TABLE TramosHorarios ( -- intervalos de tiempo en los que hay disponibilidad
     IdTramoHorario INT IDENTITY(1,1) PRIMARY KEY,
     HoraInicio VARCHAR(4),
     HoraFin VARCHAR(4),
     DiaSemanal INT
 );
 
-CREATE TABLE Disponibilidad ( -- disponibilidad de puestos de trabajo o salas en una hora espcifica
+CREATE TABLE Disponibilidades ( -- disponibilidad de puestos de trabajo o salas en una hora espcifica
     IdDisponibilidad INT IDENTITY(1,1) PRIMARY KEY,
     Fecha DATETIME,
     Estado BIT DEFAULT 1, -- por defecto estará disponible
     IdTramoHorario INT,
     IdSala INT,
     IdPuestoTrabajo INT,
-    FOREIGN KEY (IdTramoHorario) REFERENCES TramoHorario(IdTramoHorario),
+    FOREIGN KEY (IdTramoHorario) REFERENCES TramosHorarios(IdTramoHorario),
     FOREIGN KEY (IdSala) REFERENCES Salas(IdSala),
-    FOREIGN KEY (IdPuestoTrabajo) REFERENCES PuestoTrabajo(IdPuestoTrabajo)
+    FOREIGN KEY (IdPuestoTrabajo) REFERENCES PuestosTrabajo(IdPuestoTrabajo)
 );
 
-CREATE TABLE DetalleReserva ( -- reserva puestos de trabajo
+CREATE TABLE DetallesReservas ( -- reserva puestos de trabajo
     IdDetalleReserva INT IDENTITY(1,1) PRIMARY KEY,
     Descripcion VARCHAR(250),
     IdPuestoTrabajo INT,
     IdDisponibilidad INT,
-    FOREIGN KEY (IdPuestoTrabajo) REFERENCES PuestoTrabajo(IdPuestoTrabajo),
-    FOREIGN KEY (IdDisponibilidad) REFERENCES Disponibilidad(IdDisponibilidad)
+    FOREIGN KEY (IdPuestoTrabajo) REFERENCES PuestosTrabajo(IdPuestoTrabajo),
+    FOREIGN KEY (IdDisponibilidad) REFERENCES Disponibilidades(IdDisponibilidad)
 );
 
 CREATE TABLE Roles ( -- roles de usuario (admin y cliente de base)
@@ -155,7 +158,7 @@ CREATE TABLE Lineas ( -- reserva relacionada con sus detalles especificos, aquel
     IdReserva INT,
     IdDetalleReserva INT,
     FOREIGN KEY (IdReserva) REFERENCES Reservas(IdReserva),
-    FOREIGN KEY (IdDetalleReserva) REFERENCES DetalleReserva(IdDetalleReserva)
+    FOREIGN KEY (IdDetalleReserva) REFERENCES DetallesReservas(IdDetalleReserva)
 );
 
 /* AÑADIR PROXIMAMENTE CONFORME TODO ESTE HECHO 
@@ -171,18 +174,18 @@ CREATE TABLE Descuentos (
 
 /* BORRAR TODAS LAS TABLAS
 DROP TABLE Lineas;
-DROP TABLE DetalleReserva;
+DROP TABLE DetallesReservas;
 DROP TABLE Reservas;
-DROP TABLE Disponibilidad;
-DROP TABLE ZonaTrabajo;
-DROP TABLE PuestoTrabajo;
-DROP TABLE TipoPuestoTrabajo;
+DROP TABLE Disponibilidades;
+DROP TABLE ZonasTrabajo;
+DROP TABLE PuestosTrabajo;
+DROP TABLE TiposPuestosTrabajo;
 DROP TABLE Salas;
-DROP TABLE TipoSalas;
+DROP TABLE TiposSalas;
 DROP TABLE Sedes;
 DROP TABLE Usuarios;
 DROP TABLE Roles;
-DROP TABLE TramoHorario;
+DROP TABLE TramosHorarios;
 
 
 */
