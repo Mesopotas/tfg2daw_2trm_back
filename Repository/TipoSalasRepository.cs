@@ -4,11 +4,11 @@ using CoWorking.DTO;
 
 namespace CoWorking.Repositories
 {
-    public class TiposSalasRepository : ITiposSalasRepository
+    public class TipoSalasRepository : ITipoSalasRepository
     {
         private readonly string _connectionString;
 
-        public TiposSalasRepository(string connectionString)
+        public TipoSalasRepository(string connectionString)
         {
             _connectionString = connectionString;
         }
