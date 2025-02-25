@@ -85,7 +85,7 @@ namespace CoWorking.Repositories
                 using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@Nombre", rol.Nombre);
-                    command.Parameters.AddWithValue("@Capacidad", rol.Descripcion);
+                    command.Parameters.AddWithValue("@Descripcion", rol.Descripcion);
                     await command.ExecuteNonQueryAsync();
                 }
             }
@@ -97,12 +97,13 @@ namespace CoWorking.Repositories
             {
                 await connection.OpenAsync();
 
-                string query = "UPDATE Roles SET Nombre = @Nombre, Descripcion = @Descripcion WHERE idRol = @IdRole";
+                string query = "UPDATE Roles SET Nombre = @Nombre, Descripcion = @Descripcion WHERE idRol = @IdRol";
 
                 using (var command = new SqlCommand(query, connection))
                 {
-                    command.Parameters.AddWithValue("@IdRole", rol.IdRol);
-                    command.Parameters.AddWithValue("@Nombre", rol.Descripcion);
+                    command.Parameters.AddWithValue("@IdRol", rol.IdRol);
+                    command.Parameters.AddWithValue("@Nombre", rol.Nombre);
+                    command.Parameters.AddWithValue("@Descripcion", rol.Descripcion);
                     await command.ExecuteNonQueryAsync();
                 }
             }
