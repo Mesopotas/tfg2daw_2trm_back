@@ -18,8 +18,10 @@ builder.Services.AddScoped<ISalasRepository, SalasRepository>(provider =>
     new SalasRepository(connectionString));  
 
 builder.Services.AddScoped<IRolesRepository, RolesRepository>(provider =>
-    new RolesRepository(connectionString));      
+    new RolesRepository(connectionString));    
 
+builder.Services.AddScoped<ITramosHorariosRepository, TramosHorariosRepository>(provider =>
+    new TramosHorariosRepository(connectionString));    
 
 
 // Add services
@@ -28,6 +30,7 @@ builder.Services.AddScoped<ITipoSalasService, TipoSalasService>();
 builder.Services.AddScoped<ISedesService, SedesService>();
 builder.Services.AddScoped<ISalasService, SalasService>();
 builder.Services.AddScoped<IRolesService, RolesService>();
+builder.Services.AddScoped<ITramosHorariosService, TramosHorariosService>();
 
 // Add services to the container.
 builder.Services.AddControllers();
