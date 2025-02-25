@@ -86,9 +86,12 @@ CREATE TABLE PuestosTrabajo ( -- puestos de trabajo dentro de cada zona de traba
     TipoPuesto INT,
     IdZonaTrabajo INT,
     IdTipoPuestoTrabajo INT,
+    IdSala INT,
     Bloqueado BIT DEFAULT 0, -- para el rol del admin de bloquear puestos de trabajo
     FOREIGN KEY (IdZonaTrabajo) REFERENCES ZonasTrabajo(IdZonaTrabajo),
-    FOREIGN KEY (IdTipoPuestoTrabajo) REFERENCES TiposPuestosTrabajo(IdTipoPuestoTrabajo)
+    FOREIGN KEY (IdTipoPuestoTrabajo) REFERENCES TiposPuestosTrabajo(IdTipoPuestoTrabajo),
+    FOREIGN KEY (IdSala) REFERENCES Salas(IdSala)
+
 
 );
 
