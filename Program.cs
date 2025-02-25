@@ -15,7 +15,19 @@ builder.Services.AddScoped<ISedesRepository, SedesRepository>(provider =>
     new SedesRepository(connectionString));
 
 builder.Services.AddScoped<ISalasRepository, SalasRepository>(provider =>
-    new SalasRepository(connectionString));    
+    new SalasRepository(connectionString));  
+
+builder.Services.AddScoped<IRolesRepository, RolesRepository>(provider =>
+    new RolesRepository(connectionString));      
+
+
+
+// Add services
+builder.Services.AddScoped<IUsuariosService, UsuariosService>();
+builder.Services.AddScoped<ITipoSalasService, TipoSalasService>();
+builder.Services.AddScoped<ISedesService, SedesService>();
+builder.Services.AddScoped<ISalasService, SalasService>();
+builder.Services.AddScoped<IRolesService, RolesService>();
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -33,11 +45,6 @@ builder.Services.AddCors(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Add services
-builder.Services.AddScoped<IUsuariosService, UsuariosService>();
-builder.Services.AddScoped<ITipoSalasService, TipoSalasService>();
-builder.Services.AddScoped<ISedesService, SedesService>();
-builder.Services.AddScoped<ISalasService, SalasService>();
 
 var app = builder.Build();
 
