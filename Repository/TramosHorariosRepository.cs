@@ -21,7 +21,7 @@ namespace CoWorking.Repositories
             {
                 await connection.OpenAsync();
 
-                string query = "SELECT IdTramoHorario, HORARIOINICIO, HORARIOFIN, DIASEMANAL FROM TramosHorarios";
+                string query = "SELECT IdTramoHorario, HoraInicio, HoraFin, DIASEMANAL FROM TramosHorarios";
                 using (var command = new SqlCommand(query, connection))
                 {
                     using (var reader = await command.ExecuteReaderAsync())
@@ -53,7 +53,7 @@ namespace CoWorking.Repositories
             {
                 await connection.OpenAsync();
 
-                string query = "SELECT IdTramoHorario, HORARIOINICIO, HORARIOFIN, DIASEMANAL FROM TramosHorarios WHERE idTramoHorario = @Id";
+                string query = "SELECT IdTramoHorario, HoraInicio, HoraFin, DIASEMANAL FROM TramosHorarios WHERE idTramoHorario = @Id";
                 using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@Id", id);
@@ -84,7 +84,7 @@ namespace CoWorking.Repositories
             {
                 await connection.OpenAsync();
 
-                string query = "INSERT INTO TramosHorarios (HORARIOINICIO, HORARIOFIN, DIASEMANAL) VALUES (@HoraInicio, @HoraFin, @DiaSemanal)";
+                string query = "INSERT INTO TramosHorarios (HoraInicio, HoraFin, DIASEMANAL) VALUES (@HoraInicio, @HoraFin, @DiaSemanal)";
 
                 using (var command = new SqlCommand(query, connection))
                 {
@@ -102,7 +102,7 @@ namespace CoWorking.Repositories
             {
                 await connection.OpenAsync();
 
-                string query = "UPDATE TramosHorarios SET HORARIOINICIO = @HoraInicio, HORARIOFIN = @HoraFin,  DIASEMANAL = @DiaSemanal WHERE idTramoHorario = @IdTramosHorario";
+                string query = "UPDATE TramosHorarios SET HoraInicio = @HoraInicio, HoraFin = @HoraFin,  DIASEMANAL = @DiaSemanal WHERE idTramoHorario = @IdTramosHorario";
 
                 using (var command = new SqlCommand(query, connection))
                 {
