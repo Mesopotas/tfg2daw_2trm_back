@@ -94,8 +94,8 @@ CREATE TABLE PuestosTrabajo ( -- puestos de trabajo dentro de cada zona de traba
 
 CREATE TABLE TramosHorarios ( -- intervalos de tiempo en los que hay disponibilidad
     IdTramoHorario INT IDENTITY(1,1) PRIMARY KEY,
-    HoraInicio VARCHAR(4),
-    HoraFin VARCHAR(4),
+    HoraInicio VARCHAR(5),
+    HoraFin VARCHAR(5),
     DiaSemanal INT
 );
 
