@@ -53,10 +53,5 @@ namespace CoWorking.Service
                 {
                     return await _usuariosRepository.GetClientesByEmailAsync(email);
                 }
-
-        public async Task<List<UsuarioClienteDTO>> ComprobarCredencialesAsync(string email, string contrasenia)
-                    {
-                        return await _usuariosRepository.ComprobarCredencialesAsync(email, contrasenia);
-                    }
-                }
+    }
 }

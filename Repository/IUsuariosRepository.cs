@@ -10,8 +10,9 @@ namespace CoWorking.Repositories
         Task AddAsync(Usuarios usuario);
         Task UpdateAsync(Usuarios usuario);
         Task DeleteAsync(int id);
-        Task<List<UsuarioClienteDTO>> GetClientesByEmailAsync(string email); // para obtener solo los datos que el cliente le interesan, optimizando a su vez la api al manejar menos informacion que no es realmente util en un contexto determinado
-        Task<List<UsuarioClienteDTO>> ComprobarCredencialesAsync(string email, string contrasenia);
+        Task<List<UsuarioClienteDTO>> GetClientesByEmailAsync(string email);
 
+         Task<UserDTOOut> GetUserFromCredentialsAsync(LoginDto login);
+         Task<UserDTOOut> AddUserFromCredentialsAsync(RegisterDTO register);
     }
 }
