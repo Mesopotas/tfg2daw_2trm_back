@@ -40,13 +40,13 @@ namespace CoWorking.Controllers
 
 
         [HttpPost]
-        public async Task<ActionResult<Salas>> CreateSala(Salas salas)
+        public async Task<ActionResult<Salas>> CreateSala(SalasDTO salas)
         {
             await _serviceSalas.AddAsync(salas);
             return CreatedAtAction(nameof(CreateSala), new { id = salas.IdSala }, salas);
         }
 
-
+/*
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateSala(int id, Salas updatedSalas)
         {
@@ -64,7 +64,7 @@ namespace CoWorking.Controllers
             await _serviceSalas.UpdateAsync(existingSala);
             return NoContent();
         }
-
+*/
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteSala(int id)
         {

@@ -18,37 +18,37 @@ namespace CoWorking.Service
             _salasRepository = salasRepository;
         }
 
-        public async Task<List<Salas>> GetAllAsync()
+        public async Task<List<SalasDTO>> GetAllAsync()
         {
             return await _salasRepository.GetAllAsync();
         }
 
-        public async Task<Salas?> GetByIdAsync(int id)
+        public async Task<SalasDTO> GetByIdAsync(int id)
         {
             return await _salasRepository.GetByIdAsync(id);
         }
 
-        public async Task AddAsync(Salas sala)
+        public async Task AddAsync(SalasDTO sala)
         {
             await _salasRepository.AddAsync(sala);
         }
 
-        public async Task UpdateAsync(Salas sala)
+   /*     public async Task UpdateAsync(Salas sala)
         {
             await _salasRepository.UpdateAsync(sala);
         }
-
+*/
         public async Task DeleteAsync(int id)
         {
-           var sala = await _salasRepository.GetByIdAsync(id);
-           if (sala == null)
-           {
-               //return NotFound();
-           }
-           await _salasRepository.DeleteAsync(id);
-           //return NoContent();
+            var sala = await _salasRepository.GetByIdAsync(id);
+            if (sala == null)
+            {
+                //return NotFound();
+            }
+            await _salasRepository.DeleteAsync(id);
+            //return NoContent();
         }
 
 
-                }
+    }
 }
