@@ -36,19 +36,33 @@ CREATE TABLE Sedes ( -- ubicacion fisica de la oficina
     Observaciones VARCHAR(100)
 );
 
-CREATE TABLE TiposSalas ( -- privada o comun
-    IdTipoSala INT IDENTITY(1,1) PRIMARY KEY,
-    EsPrivada BIT DEFAULT 0, -- DEFAULT SERÁ FALSO, OSEA, PUBLICA
-    Descripcion VARCHAR(100)
+CREATE TABLE TiposPuestosTrabajo ( -- define los tipos de puestos como silla, mesa, etc y su precio base a aplicar
+    IdTipoPuestoTrabajo INT IDENTITY(1,1) PRIMARY KEY,
+    Nombre VARCHAR(100),
+    Imagen_URL VARCHAR(250), -- imagen de la silla por ejemplo
+    Descripcion VARCHAR(200),
+    Precio DECIMAL(10,2)
 );
 
-    -- INSERT para los 2 tipos de sala iniciales
+INSERT INTO TiposPuestosTrabajo(Nombre, Imagen_URL, Descripcion, Precio) -- insert inicial de silla, tendrá id 1, link de imagen provisional, pendiente cambiarlo
+VALUES ('Silla comun', 'https://e7.pngegg.com/pngimages/488/752/png-clipart-chair-desk-table-school-chair-angle-furniture-thumbnail.png', 'Silla comun', 5.00);
+
+CREATE TABLE TiposSalas ( -- privada o comun
+    IdTipoSala INT IDENTITY(1,1) PRIMARY KEY,
+    Nombre VARCHAR(100),
+    NumeroMesas INT, -- NUMERO DE MESAS
+    CapacidadAsientos INT, -- NUMERO DE ASIENTOS POR MESA 
+    EsPrivada BIT DEFAULT 0, -- DEFAULT SERÁ FALSO, OSEA, PUBLICA
+    Descripcion VARCHAR(100),
+    IdTipoPuestoTrabajo INT,
+    FOREIGN KEY (IdTipoPuestoTrabajo) REFERENCES TiposPuestosTrabajo(IdTipoPuestoTrabajo)
+);
+   -- INSERT para los 2 tipos de sala iniciales, habrá que cambiar los condicionales en el back
     INSERT INTO TiposSalas (EsPrivada, Descripcion)
     VALUES (0, 'Sala Publica'); -- EsPrivada = 0 osea False, tendrá ID = 1
 
     INSERT INTO TiposSalas (EsPrivada, Descripcion)
     VALUES (1, 'Sala Privada'); -- EsPrivada = 1 osea True, tendrá ID = 2
-
 
 CREATE TABLE Salas ( -- salas dentro de cada sede
     IdSala INT IDENTITY(1,1) PRIMARY KEY,
@@ -57,7 +71,7 @@ CREATE TABLE Salas ( -- salas dentro de cada sede
     Capacidad INT,
     IdTipoSala INT,
     IdSede INT,
-    Precio DECIMAL(10,2), -- precio sala privada o compartida
+    Precio DECIMAL(10,2) DEFAULT 0,
     Bloqueado BIT DEFAULT 0, -- para el rol del admin de bloquear puestos de trabajo
     FOREIGN KEY (IdSede) REFERENCES Sedes(IdSede),
     FOREIGN KEY (IdTipoSala) REFERENCES TiposSalas(IdTipoSala)
@@ -65,31 +79,20 @@ CREATE TABLE Salas ( -- salas dentro de cada sede
 
 CREATE TABLE ZonasTrabajo ( -- aforo dentro de cada sala y sus detalles
     IdZonaTrabajo INT IDENTITY(1,1) PRIMARY KEY,
-    NumPuestosTrabajo INT,
     Descripcion VARCHAR(250),
     IdSala INT,
     FOREIGN KEY (IdSala) REFERENCES Salas(IdSala)
 );
 
-CREATE TABLE TiposPuestosTrabajo ( -- define los tipos de puestos como silla, mesa, etc y su precio base a aplicar
-    IdTipoPuestoTrabajo INT IDENTITY(1,1) PRIMARY KEY,
-    Descripcion VARCHAR(200),
-    Precio DECIMAL(10,2)
-);
-
 CREATE TABLE PuestosTrabajo ( -- puestos de trabajo dentro de cada zona de trabajo, en principio de base solo para sillas a escoger, ampliandolo en un futuro a poder elegir lotes de mesas
     IdPuestoTrabajo INT IDENTITY(1,1) PRIMARY KEY,
     URL_Imagen VARCHAR(250), -- la imagen del componente, como mesas, sillas, etc para el fetch
-    Codigo INT,
-    Estado INT,
-    Capacidad INT,
-    TipoPuesto INT,
+    CodigoMesa INT, -- será el identificador de mesas, codigo 1 -> mesa 1, codigo 2 -> mesa 2, si hago 4x4 mesas, habrá 4 codigos asignados a 4 mesas cada uno
+    Disponible BIT DEFAULT 1, -- por defecto estará disponible para reservar
     IdZonaTrabajo INT,
-    IdTipoPuestoTrabajo INT,
     IdSala INT,
     Bloqueado BIT DEFAULT 0, -- para el rol del admin de bloquear puestos de trabajo
     FOREIGN KEY (IdZonaTrabajo) REFERENCES ZonasTrabajo(IdZonaTrabajo),
-    FOREIGN KEY (IdTipoPuestoTrabajo) REFERENCES TiposPuestosTrabajo(IdTipoPuestoTrabajo),
     FOREIGN KEY (IdSala) REFERENCES Salas(IdSala)
 
 
@@ -104,7 +107,7 @@ CREATE TABLE TramosHorarios ( -- intervalos de tiempo en los que hay disponibili
 
 CREATE TABLE Disponibilidades ( -- disponibilidad de puestos de trabajo o salas en una hora espcifica
     IdDisponibilidad INT IDENTITY(1,1) PRIMARY KEY,
-    Fecha DATETIME,
+    Fecha INT,
     Estado BIT DEFAULT 1, -- por defecto estará disponible
     IdTramoHorario INT,
     IdSala INT,
@@ -175,20 +178,8 @@ CREATE TABLE Descuentos (
 */
 
 
-/* BORRAR TODAS LAS TABLAS
-DROP TABLE Lineas;
-DROP TABLE DetallesReservas;
-DROP TABLE Reservas;
-DROP TABLE Disponibilidades;
-DROP TABLE ZonasTrabajo;
-DROP TABLE PuestosTrabajo;
-DROP TABLE TiposPuestosTrabajo;
-DROP TABLE Salas;
-DROP TABLE TiposSalas;
-DROP TABLE Sedes;
-DROP TABLE Usuarios;
-DROP TABLE Roles;
-DROP TABLE TramosHorarios;
-
+/* BORRAR TODAS LA BBDD
+USE master;
+DROP DATABASE CoworkingDB;
 
 */
