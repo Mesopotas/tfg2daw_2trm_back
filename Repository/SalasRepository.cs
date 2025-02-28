@@ -37,9 +37,6 @@ namespace CoWorking.Repositories
                                 IdSede = reader.GetInt32(4),
                                 Precio = (double)reader.GetDecimal(5),
                                 Bloqueado = reader.GetBoolean(6),
-                                NumeroMesas = reader.GetInt32(7),
-                                CapacidadAsientos = reader.GetInt32(8),
-                                EsPrivada = reader.GetBoolean(9)
                             };
 
                             // Zonas de trabajo para esta sala
@@ -124,9 +121,6 @@ namespace CoWorking.Repositories
                                 IdSede = reader.GetInt32(4),
                                 Precio = (double)reader.GetDecimal(5),
                                 Bloqueado = reader.GetBoolean(6),
-                                NumeroMesas = reader.GetInt32(7),
-                                CapacidadAsientos = reader.GetInt32(8),
-                                EsPrivada = reader.GetBoolean(9),
                                 Zona = new List<ZonasTrabajoDTO>(),
                                 Puestos = new List<PuestosTrabajoDTO>()
                             };
@@ -181,114 +175,115 @@ namespace CoWorking.Repositories
 
             return salaDto; // Returns null if no sala is found with the given id
         }
-        public async Task AddAsync(SalasDTO salaDto)
+public async Task AddAsync(SalasDTO salaDto)
+{
+    using (var connection = new SqlConnection(_connectionString))
+    {
+        await connection.OpenAsync();
+
+        int numeroMesas = 0;
+        int capacidadAsientos = 0;
+
+        string queryTipoSala = @"
+        SELECT NumeroMesas, CapacidadAsientos FROM TiposSalas WHERE IdTipoSala = @IdTipoSala"; // obtener el numero de mesas y asientos x mesa para calcular la capacidad total para salas
+
+        using (var command = new SqlCommand(queryTipoSala, connection))
         {
-            using (var connection = new SqlConnection(_connectionString))
+            command.Parameters.AddWithValue("@IdTipoSala", salaDto.IdTipoSala);
+            using (var reader = await command.ExecuteReaderAsync())
             {
-                await connection.OpenAsync();
-
-
-                string insertTipoSala = @"
-        INSERT INTO TiposSalas (Nombre, NumeroMesas, CapacidadAsientos, EsPrivada, Descripcion, IdTipoPuestoTrabajo) 
-        VALUES (@Nombre, @NumeroMesas, @CapacidadAsientos, @EsPrivada, @Descripcion, @IdTipoPuestoTrabajo);
-        SELECT CAST(SCOPE_IDENTITY() AS INT);";
-
-                int idTipoSala;
-
-                using (var command = new SqlCommand(insertTipoSala, connection))
+                if (await reader.ReadAsync())
                 {
-                    command.Parameters.AddWithValue("@Nombre", $"Tipo para {salaDto.Nombre}");
-                    command.Parameters.AddWithValue("@NumeroMesas", salaDto.EsPrivada ? 1 : salaDto.NumeroMesas); // si esPrivada = true, solo habrá una mesa siempre, si es = false se usa el valor dado a NumeroMesas 
-                    command.Parameters.AddWithValue("@CapacidadAsientos", salaDto.CapacidadAsientos);
-                    command.Parameters.AddWithValue("@EsPrivada", salaDto.EsPrivada);
-                    command.Parameters.AddWithValue("@Descripcion", "");
-                    command.Parameters.AddWithValue("@IdTipoPuestoTrabajo", 1); // 1 será el Id de silla común
-
-                    idTipoSala = (int)await command.ExecuteScalarAsync();
+                    numeroMesas = reader.GetInt32(0);
+                    capacidadAsientos = reader.GetInt32(1);
                 }
+                else
+                {
+                    throw new Exception($"No se encontró un TipoSala con IdTipoSala = {salaDto.IdTipoSala}");
+                }
+            }
+        }
 
-                // capacidad total de salas serán las 2 capacidades de tipo de sala
-            int capacidadTotal = (salaDto.EsPrivada ? 1 : salaDto.NumeroMesas) * salaDto.CapacidadAsientos; // como arriba, checkeo de si es privada o no para determinar el valor para el que luego se recorrerá en el for de los asientos
+        // Calcular la capacidad total
+        int capacidadTotal = numeroMesas * capacidadAsientos;
 
-                //  Creamos la sala referenciando al tipo creado
-                string insertSala = @"
+        // insert de la sala con la capacidad total asociada y los datos dados en el endpoint del post
+        string insertSala = @"
         INSERT INTO Salas (Nombre, URL_Imagen, Capacidad, IdTipoSala, IdSede, Bloqueado) 
         VALUES (@Nombre, @URL_Imagen, @Capacidad, @IdTipoSala, @IdSede, @Bloqueado);
         SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
-                int idSala;
+        int idSala;
 
-                using (var command = new SqlCommand(insertSala, connection))
-                {
-                    command.Parameters.AddWithValue("@Nombre", salaDto.Nombre);
-                    command.Parameters.AddWithValue("@URL_Imagen", salaDto.URL_Imagen);
-                    command.Parameters.AddWithValue("@Capacidad", capacidadTotal);
-                    command.Parameters.AddWithValue("@IdTipoSala", idTipoSala);
-                    command.Parameters.AddWithValue("@IdSede", salaDto.IdSede);
-                    command.Parameters.AddWithValue("@Bloqueado", false);
+        using (var command = new SqlCommand(insertSala, connection))
+        {
+            command.Parameters.AddWithValue("@Nombre", salaDto.Nombre);
+            command.Parameters.AddWithValue("@URL_Imagen", salaDto.URL_Imagen);
+            command.Parameters.AddWithValue("@Capacidad", capacidadTotal);
+            command.Parameters.AddWithValue("@IdTipoSala", salaDto.IdTipoSala);
+            command.Parameters.AddWithValue("@IdSede", salaDto.IdSede);
+            command.Parameters.AddWithValue("@Bloqueado", false);
 
-                    idSala = (int)await command.ExecuteScalarAsync();
-                }
+            idSala = (int)await command.ExecuteScalarAsync();
+        }
 
-                //   insert a zona de trabajo
-                string insertZonaTrabajo = @"
+        string insertZonaTrabajo = @"
         INSERT INTO ZonasTrabajo (Descripcion, IdSala) 
         VALUES (@Descripcion, @IdSala);
         SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
-                int idZonaTrabajo;
-                using (var command = new SqlCommand(insertZonaTrabajo, connection))
-                {
-                    command.Parameters.AddWithValue("@Descripcion", "");
-                    command.Parameters.AddWithValue("@IdSala", idSala);
+        int idZonaTrabajo;
+        using (var command = new SqlCommand(insertZonaTrabajo, connection))
+        {
+            command.Parameters.AddWithValue("@Descripcion", "");
+            command.Parameters.AddWithValue("@IdSala", idSala);
 
-                    idZonaTrabajo = (int)await command.ExecuteScalarAsync();
-                }
+            idZonaTrabajo = (int)await command.ExecuteScalarAsync();
+        }
 
                 //  se crean las sillas en base a la capacidad total
-                for (int i = 0; i < capacidadTotal; i++)
-                {
-                    // cada silla tendrá asociada una mesa a la que se asocie
-                    int codigoMesa = (i / salaDto.CapacidadAsientos) + 1; // al ser una operacion de enteros, no hay decimales, por tanto 3/4 = 0, 5/4 = 1 y asi con todos, pudiendo asi autonincrementar los valores
-
-                    string insertPuestoTrabajo = @"
-            INSERT INTO PuestosTrabajo (URL_Imagen, CodigoMesa, IdZonaTrabajo, IdSala, Bloqueado) 
-            VALUES (@URL_Imagen, @CodigoMesa, @IdZonaTrabajo, @IdSala, @Bloqueado)";
-
-                    using (var command = new SqlCommand(insertPuestoTrabajo, connection))
-                    {
-                        command.Parameters.AddWithValue("@URL_Imagen", ""); // sin imagen por defecto de momento (añadir para el fetch)
-                        command.Parameters.AddWithValue("@CodigoMesa", codigoMesa);
-                        command.Parameters.AddWithValue("@IdZonaTrabajo", idZonaTrabajo);
-                        command.Parameters.AddWithValue("@IdSala", idSala);
-                        command.Parameters.AddWithValue("@Bloqueado", false);
-
-                        await command.ExecuteNonQueryAsync();
-                    }
-                }
-
-            }
-        }
-        public async Task UpdateAsync(Salas sala)
+        for (int i = 0; i < capacidadTotal; i++)
         {
-            using (var connection = new SqlConnection(_connectionString))
+                    // cada silla tendrá asociada una mesa a la que se asocie
+            int codigoMesa = (i / capacidadAsientos) + 1; // al ser una operacion de enteros, no hay decimales, por tanto 3/4 = 0, 5/4 = 1 y asi con todos, pudiendo asi autonincrementar los valores
+
+            string insertPuestoTrabajo = @"
+            INSERT INTO PuestosTrabajo (URL_Imagen, CodigoMesa, IdZonaTrabajo, IdSala, Bloqueado) 
+            VALUES (@URL_Imagen, @CodigoMesa, @IdZonaTrabajo, @IdSala, @Bloqueado);
+            SELECT CAST(SCOPE_IDENTITY() AS INT);";
+
+            int idPuestoTrabajo;
+            using (var command = new SqlCommand(insertPuestoTrabajo, connection))
             {
-                await connection.OpenAsync();
-                string query = "UPDATE Salas SET Nombre = @Nombre, URL_Imagen = @URL_Imagen, Capacidad = @Capacidad, IdTipoSala = @IdTipoSala, IdSede = @IdSede, Precio = @Precio, Bloqueado = @Bloqueado WHERE IdSala = @IdSala";
-                using (var command = new SqlCommand(query, connection))
+                command.Parameters.AddWithValue("@URL_Imagen", "");
+                command.Parameters.AddWithValue("@CodigoMesa", codigoMesa);
+                command.Parameters.AddWithValue("@IdZonaTrabajo", idZonaTrabajo);
+                command.Parameters.AddWithValue("@IdSala", idSala);
+                command.Parameters.AddWithValue("@Bloqueado", false);
+
+                idPuestoTrabajo = (int)await command.ExecuteScalarAsync();
+            }
+
+            for (int diasMes = 1; diasMes <= 31; diasMes++)
+            {
+                string insertDisponibilidad = @"
+                INSERT INTO Disponibilidades (Fecha, Estado, IdTramoHorario, IdPuestoTrabajo) 
+                VALUES (@Fecha, @Estado, @IdTramoHorario, @IdPuestoTrabajo)";
+
+                using (var command = new SqlCommand(insertDisponibilidad, connection))
                 {
-                    command.Parameters.AddWithValue("@IdSala", sala.IdSala);
-                    command.Parameters.AddWithValue("@Nombre", sala.Nombre);
-                    command.Parameters.AddWithValue("@URL_Imagen", sala.URL_Imagen);
-                    command.Parameters.AddWithValue("@Capacidad", sala.Capacidad);
-                    command.Parameters.AddWithValue("@IdTipoSala", sala.IdTipoSala);
-                    command.Parameters.AddWithValue("@IdSede", sala.IdSede);
-                    command.Parameters.AddWithValue("@Precio", sala.Precio);
-                    command.Parameters.AddWithValue("@Bloqueado", sala.Bloqueado);
+                    command.Parameters.AddWithValue("@Fecha", diasMes);
+                    command.Parameters.AddWithValue("@Estado", true);
+                    command.Parameters.AddWithValue("@IdTramoHorario", 1); // habrá q cambiarlo, debe haber un tramo horario creado con id 1 sino dará conflicto de clave foranea
+                    command.Parameters.AddWithValue("@IdPuestoTrabajo", idPuestoTrabajo);
+
                     await command.ExecuteNonQueryAsync();
                 }
             }
         }
+        salaDto.Capacidad = capacidadTotal; // se actualiza el valor de la  variable del dto con la capacidad total calculada previamente
+    }
+}
         public async Task DeleteAsync(int id)
         {
             using (var connection = new SqlConnection(_connectionString))

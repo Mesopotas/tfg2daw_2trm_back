@@ -11,10 +11,8 @@ namespace Models
         public int IdSede { get; set; }
         public double Precio { get; set; }
         public bool Bloqueado { get; set; }
+        public int IdTipoSala { get; set; }
 
-        public int NumeroMesas { get; set; }
-        public int CapacidadAsientos { get; set; }
-        public bool EsPrivada { get; set; }
 
         public List<ZonasTrabajoDTO> Zona { get; set; } = new List<ZonasTrabajoDTO>();
         public List<PuestosTrabajoDTO> Puestos { get; set; } = new List<PuestosTrabajoDTO>();
@@ -33,7 +31,14 @@ namespace Models
         public int CodigoMesa { get; set; }
         public bool Disponible { get; set; }
         public bool Bloqueado { get; set; }
+        public List<DisponibilidadDTO> Disponibilidades { get; set; } = new List<DisponibilidadDTO>();
     }
 
-
+    public class DisponibilidadDTO
+    {
+        public int IdDisponibilidad { get; set; }
+        public int Fecha { get; set; }
+        public bool Estado { get; set; }
+        public int IdTramoHorario { get; set; }
+    }
 }
