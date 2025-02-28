@@ -38,10 +38,10 @@ CREATE TABLE Sedes ( -- ubicacion fisica de la oficina
 
 CREATE TABLE TiposPuestosTrabajo ( -- define los tipos de puestos como silla, mesa, etc y su precio base a aplicar
     IdTipoPuestoTrabajo INT IDENTITY(1,1) PRIMARY KEY,
-    Nombre VARCHAR(100),
+    Nombre VARCHAR(100), -- silla sala privada, silla sala publica y cada una un precio variable
     Imagen_URL VARCHAR(250), -- imagen de la silla por ejemplo
     Descripcion VARCHAR(200),
-    Precio DECIMAL(10,2)
+    Precio DECIMAL(10,2) -- relativo a tipossala y todo
 );
 
 INSERT INTO TiposPuestosTrabajo(Nombre, Imagen_URL, Descripcion, Precio) -- insert inicial de silla, tendrá id 1, link de imagen provisional, pendiente cambiarlo
@@ -71,7 +71,6 @@ CREATE TABLE Salas ( -- salas dentro de cada sede
     Capacidad INT,
     IdTipoSala INT,
     IdSede INT,
-    Precio DECIMAL(10,2) DEFAULT 0,
     Bloqueado BIT DEFAULT 0, -- para el rol del admin de bloquear puestos de trabajo
     FOREIGN KEY (IdSede) REFERENCES Sedes(IdSede),
     FOREIGN KEY (IdTipoSala) REFERENCES TiposSalas(IdTipoSala)
@@ -86,8 +85,9 @@ CREATE TABLE ZonasTrabajo ( -- aforo dentro de cada sala y sus detalles
 
 CREATE TABLE PuestosTrabajo ( -- puestos de trabajo dentro de cada zona de trabajo, en principio de base solo para sillas a escoger, ampliandolo en un futuro a poder elegir lotes de mesas
     IdPuestoTrabajo INT IDENTITY(1,1) PRIMARY KEY,
-    URL_Imagen VARCHAR(250), -- la imagen del componente, como mesas, sillas, etc para el fetch
+    NumeroAsiento INT, -- será un identificador secundario (REPETIBLE) para la silla para pintarla en el fetch
     CodigoMesa INT, -- será el identificador de mesas, codigo 1 -> mesa 1, codigo 2 -> mesa 2, si hago 4x4 mesas, habrá 4 codigos asignados a 4 mesas cada uno
+    URL_Imagen VARCHAR(250), -- la imagen del componente, como mesas, sillas, etc para el fetch
     Disponible BIT DEFAULT 1, -- por defecto estará disponible para reservar
     IdZonaTrabajo INT,
     IdSala INT,
@@ -100,8 +100,7 @@ CREATE TABLE PuestosTrabajo ( -- puestos de trabajo dentro de cada zona de traba
 CREATE TABLE TramosHorarios ( -- intervalos de tiempo en los que hay disponibilidad
     IdTramoHorario INT IDENTITY(1,1) PRIMARY KEY,
     HoraInicio VARCHAR(5),
-    HoraFin VARCHAR(5),
-    DiaSemanal INT
+    HoraFin VARCHAR(5)
 );
 
 CREATE TABLE Disponibilidades ( -- disponibilidad de puestos de trabajo o salas en una hora espcifica
