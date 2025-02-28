@@ -198,7 +198,7 @@ namespace CoWorking.Repositories
                 using (var command = new SqlCommand(insertTipoSala, connection))
                 {
                     command.Parameters.AddWithValue("@Nombre", $"Tipo para {salaDto.Nombre}");
-                    command.Parameters.AddWithValue("@NumeroMesas", salaDto.NumeroMesas);
+                    command.Parameters.AddWithValue("@NumeroMesas", salaDto.EsPrivada ? 1 : salaDto.NumeroMesas); // si esPrivada = true, solo habrá una mesa siempre, si es = false se usa el valor dado a NumeroMesas 
                     command.Parameters.AddWithValue("@CapacidadAsientos", salaDto.CapacidadAsientos);
                     command.Parameters.AddWithValue("@EsPrivada", salaDto.EsPrivada);
                     command.Parameters.AddWithValue("@Descripcion", "");
@@ -208,7 +208,7 @@ namespace CoWorking.Repositories
                 }
 
                 // capacidad total de salas serán las 2 capacidades de tipo de sala
-                int capacidadTotal = salaDto.NumeroMesas * salaDto.CapacidadAsientos;
+            int capacidadTotal = (salaDto.EsPrivada ? 1 : salaDto.NumeroMesas) * salaDto.CapacidadAsientos; // como arriba, checkeo de si es privada o no para determinar el valor para el que luego se recorrerá en el for de los asientos
 
                 //  Creamos la sala referenciando al tipo creado
                 string insertSala = @"
@@ -252,14 +252,13 @@ namespace CoWorking.Repositories
                     int codigoMesa = (i / salaDto.CapacidadAsientos) + 1; // al ser una operacion de enteros, no hay decimales, por tanto 3/4 = 0, 5/4 = 1 y asi con todos, pudiendo asi autonincrementar los valores
 
                     string insertPuestoTrabajo = @"
-            INSERT INTO PuestosTrabajo (URL_Imagen, CodigoMesa, Estado, IdZonaTrabajo, IdSala, Bloqueado) 
-            VALUES (@URL_Imagen, @CodigoMesa, @Estado, @IdZonaTrabajo, @IdSala, @Bloqueado)";
+            INSERT INTO PuestosTrabajo (URL_Imagen, CodigoMesa, IdZonaTrabajo, IdSala, Bloqueado) 
+            VALUES (@URL_Imagen, @CodigoMesa, @IdZonaTrabajo, @IdSala, @Bloqueado)";
 
                     using (var command = new SqlCommand(insertPuestoTrabajo, connection))
                     {
                         command.Parameters.AddWithValue("@URL_Imagen", ""); // sin imagen por defecto de momento (añadir para el fetch)
                         command.Parameters.AddWithValue("@CodigoMesa", codigoMesa);
-                        command.Parameters.AddWithValue("@Estado", 1); // 1 = disponible
                         command.Parameters.AddWithValue("@IdZonaTrabajo", idZonaTrabajo);
                         command.Parameters.AddWithValue("@IdSala", idSala);
                         command.Parameters.AddWithValue("@Bloqueado", false);
