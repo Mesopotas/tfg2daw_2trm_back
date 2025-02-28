@@ -87,15 +87,14 @@ CREATE TABLE ZonasTrabajo ( -- aforo dentro de cada sala y sus detalles
 CREATE TABLE PuestosTrabajo ( -- puestos de trabajo dentro de cada zona de trabajo, en principio de base solo para sillas a escoger, ampliandolo en un futuro a poder elegir lotes de mesas
     IdPuestoTrabajo INT IDENTITY(1,1) PRIMARY KEY,
     URL_Imagen VARCHAR(250), -- la imagen del componente, como mesas, sillas, etc para el fetch
-    CodigoMesa INT, -- será el identificador de mesas, codigo 1 -> mesa 1, codigo 2 -> mesa 2, si hago 4x4 mesas, habrá 4 codigos asignados a 4 mesas cada uno
-    Disponible BIT DEFAULT 1, -- por defecto estará disponible para reservar
+    CodigoMesa INT, -- será el identificador de mesas, codigo 1 -> mesa 1, codigo 2 -> mesa 2, si hago 4x4 mesas, habrá 4 codigos asignados a 4 mesas cada uno
+    Disponible BIT DEFAULT 1, -- por defecto estará disponible para reservar
     IdZonaTrabajo INT,
     IdSala INT,
     Bloqueado BIT DEFAULT 0, -- para el rol del admin de bloquear puestos de trabajo
     FOREIGN KEY (IdZonaTrabajo) REFERENCES ZonasTrabajo(IdZonaTrabajo),
     FOREIGN KEY (IdSala) REFERENCES Salas(IdSala)
-
-
+    
 );
 
 CREATE TABLE TramosHorarios ( -- intervalos de tiempo en los que hay disponibilidad
@@ -108,12 +107,10 @@ CREATE TABLE TramosHorarios ( -- intervalos de tiempo en los que hay disponibili
 CREATE TABLE Disponibilidades ( -- disponibilidad de puestos de trabajo o salas en una hora espcifica
     IdDisponibilidad INT IDENTITY(1,1) PRIMARY KEY,
     Fecha INT,
-    Estado BIT DEFAULT 1, -- por defecto estará disponible
+    Estado BIT DEFAULT 1, -- por defecto estará disponible
     IdTramoHorario INT,
-    IdSala INT,
     IdPuestoTrabajo INT,
     FOREIGN KEY (IdTramoHorario) REFERENCES TramosHorarios(IdTramoHorario),
-    FOREIGN KEY (IdSala) REFERENCES Salas(IdSala),
     FOREIGN KEY (IdPuestoTrabajo) REFERENCES PuestosTrabajo(IdPuestoTrabajo)
 );
 
@@ -121,9 +118,7 @@ CREATE TABLE DetallesReservas ( -- reserva puestos de trabajo
     IdDetalleReserva INT IDENTITY(1,1) PRIMARY KEY,
     Descripcion VARCHAR(250),
     IdPuestoTrabajo INT,
-    IdDisponibilidad INT,
-    FOREIGN KEY (IdPuestoTrabajo) REFERENCES PuestosTrabajo(IdPuestoTrabajo),
-    FOREIGN KEY (IdDisponibilidad) REFERENCES Disponibilidades(IdDisponibilidad)
+    FOREIGN KEY (IdPuestoTrabajo) REFERENCES PuestosTrabajo(IdPuestoTrabajo)
 );
 
 CREATE TABLE Roles ( -- roles de usuario (admin y cliente de base)
