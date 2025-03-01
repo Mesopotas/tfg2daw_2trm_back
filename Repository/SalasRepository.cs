@@ -74,14 +74,42 @@ public async Task<List<SalasDTO>> GetAllAsync()
                         {
                             while (await readerPuestosTrabajos.ReadAsync())
                             {
-                                salaDto.Puestos.Add(new PuestosTrabajoDTO
+                                var puesto = new PuestosTrabajoDTO
                                 {
                                     IdPuestoTrabajo = readerPuestosTrabajos.GetInt32(0),
                                     URL_Imagen = readerPuestosTrabajos.GetString(1),
                                     CodigoMesa = readerPuestosTrabajos.GetInt32(2),
                                     Disponible = readerPuestosTrabajos.GetBoolean(3),
-                                    Bloqueado = readerPuestosTrabajos.GetBoolean(4)
-                                });
+                                    Bloqueado = readerPuestosTrabajos.GetBoolean(4),
+                                    Disponibilidades = new List<DisponibilidadDTO>()
+                                };
+                                salaDto.Puestos.Add(puesto);
+                            }
+                        }
+                    }
+
+                    // Agregar Disponibilidades para cada PuestoTrabajo de la sala
+                    foreach (var puesto in salaDto.Puestos)
+                    {
+                        string queryDisponibilidades = @"
+                            SELECT IdDisponibilidad, Fecha, Estado, IdTramoHorario 
+                            FROM Disponibilidades 
+                            WHERE IdPuestoTrabajo = @idPuestoTrabajo";
+                        using (var commandDisponibilidad = new SqlCommand(queryDisponibilidades, connection))
+                        {
+                            commandDisponibilidad.Parameters.AddWithValue("@idPuestoTrabajo", puesto.IdPuestoTrabajo);
+                            using (var readerDisponibilidades = await commandDisponibilidad.ExecuteReaderAsync())
+                            {
+                                while (await readerDisponibilidades.ReadAsync())
+                                {
+                                    puesto.Disponibilidades.Add(new DisponibilidadDTO
+                                    {
+                                        IdDisponibilidad = readerDisponibilidades.GetInt32(0),
+                                        Fecha = readerDisponibilidades.GetInt32(1),
+                                        Estado = readerDisponibilidades.GetBoolean(2),
+                                        IdTramoHorario = readerDisponibilidades.GetInt32(3)
+                                    });
+                                }
                             }
                         }
                     }
@@ -94,8 +122,7 @@ public async Task<List<SalasDTO>> GetAllAsync()
 
     return salasDto;
 }
-
-   public async Task<SalasDTO> GetByIdAsync(int id)
+public async Task<SalasDTO> GetByIdAsync(int id)
 {
     SalasDTO salaDto = null;
 
@@ -158,15 +185,39 @@ public async Task<List<SalasDTO>> GetAllAsync()
                 {
                     while (await readerPuestosTrabajos.ReadAsync())
                     {
-                        var puestoTrabajo = new PuestosTrabajoDTO
+                        var puesto = new PuestosTrabajoDTO
                         {
                             IdPuestoTrabajo = readerPuestosTrabajos.GetInt32(0),
                             URL_Imagen = readerPuestosTrabajos.GetString(1),
                             CodigoMesa = readerPuestosTrabajos.GetInt32(2),
                             Disponible = readerPuestosTrabajos.GetBoolean(3),
-                            Bloqueado = readerPuestosTrabajos.GetBoolean(4)
+                            Bloqueado = readerPuestosTrabajos.GetBoolean(4),
+                            Disponibilidades = new List<DisponibilidadDTO>()
                         };
-                        salaDto.Puestos.Add(puestoTrabajo);
+                        salaDto.Puestos.Add(puesto);
+                    }
+                }
+            }
+
+            // Agregar Disponibilidades para cada PuestoTrabajo
+            foreach (var puesto in salaDto.Puestos)
+            {
+                string queryDisponibilidades = "SELECT IdDisponibilidad, Fecha, Estado, IdTramoHorario FROM Disponibilidades WHERE IdPuestoTrabajo = @idPuestoTrabajo";
+                using (var commandDisponibilidad = new SqlCommand(queryDisponibilidades, connection))
+                {
+                    commandDisponibilidad.Parameters.AddWithValue("@idPuestoTrabajo", puesto.IdPuestoTrabajo);
+                    using (var readerDisponibilidades = await commandDisponibilidad.ExecuteReaderAsync())
+                    {
+                        while (await readerDisponibilidades.ReadAsync())
+                        {
+                            puesto.Disponibilidades.Add(new DisponibilidadDTO
+                            {
+                                IdDisponibilidad = readerDisponibilidades.GetInt32(0),
+                                Fecha = readerDisponibilidades.GetInt32(1),
+                                Estado = readerDisponibilidades.GetBoolean(2),
+                                IdTramoHorario = readerDisponibilidades.GetInt32(3)
+                            });
+                        }
                     }
                 }
             }
