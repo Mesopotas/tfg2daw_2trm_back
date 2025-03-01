@@ -13,123 +13,35 @@ namespace CoWorking.Repositories
             _connectionString = connectionString;
         }
 
-        public async Task<List<SalasDTO>> GetAllAsync()
+public async Task<List<SalasDTO>> GetAllAsync()
+{
+    var salasDto = new List<SalasDTO>();
+
+    using (var connection = new SqlConnection(_connectionString))
+    {
+        await connection.OpenAsync();
+        
+        string query = "SELECT IdSala, Nombre, URL_Imagen, Capacidad, IdTipoSala, IdSede, Bloqueado FROM Salas;";
+
+        using (var command = new SqlCommand(query, connection))
         {
-            var salasDto = new List<SalasDTO>();
-
-            using (var connection = new SqlConnection(_connectionString))
+            using (var reader = await command.ExecuteReaderAsync())
             {
-                await connection.OpenAsync();
-                string query = "SELECT sala.IdSala, sala.Nombre, sala.URL_Imagen, sala.Capacidad, sala.IdSede, sala.Precio, sala.Bloqueado, ts.NumeroMesas, ts.CapacidadAsientos, ts.EsPrivada FROM Salas sala INNER JOIN TiposSalas ts ON sala.IdTipoSala = ts.IdTipoSala";
-                using (var command = new SqlCommand(query, connection))
+                while (await reader.ReadAsync())
                 {
-                    using (var reader = await command.ExecuteReaderAsync())
+                    var salaDto = new SalasDTO
                     {
-                        while (await reader.ReadAsync())
-                        {
+                        IdSala = reader.GetInt32(0),
+                        Nombre = reader.GetString(1),
+                        URL_Imagen = reader.GetString(2),
+                        Capacidad = reader.GetInt32(3),
+                        IdTipoSala = reader.GetInt32(4),
+                        IdSede = reader.GetInt32(5),
+                        Bloqueado = reader.GetBoolean(6),
+                        Zona = new List<ZonasTrabajoDTO>(),
+                        Puestos = new List<PuestosTrabajoDTO>()
+                    };
 
-                            var salaDto = new SalasDTO
-                            {
-                                IdSala = reader.GetInt32(0),
-                                Nombre = reader.GetString(1),
-                                URL_Imagen = reader.GetString(2),
-                                Capacidad = reader.GetInt32(3),
-                                IdSede = reader.GetInt32(4),
-                                Precio = (double)reader.GetDecimal(5),
-                                Bloqueado = reader.GetBoolean(6),
-                            };
-
-                            // Zonas de trabajo para esta sala
-                            string queryZonasTrabajo = "SELECT IdZonaTrabajo, Descripcion FROM ZonasTrabajo WHERE IdSala = @idSala";
-                            using (var commandZonaTrabajo = new SqlCommand(queryZonasTrabajo, connection))
-                            {
-                                commandZonaTrabajo.Parameters.AddWithValue("@idSala", salaDto.IdSala);
-                                using (var readerZonaTrabajo = await commandZonaTrabajo.ExecuteReaderAsync())
-                                {
-                                    while (await readerZonaTrabajo.ReadAsync())
-                                    {
-                                        var zonaTrabajo = new ZonasTrabajoDTO
-                                        {
-                                            IdZonaTrabajo = readerZonaTrabajo.GetInt32(0),
-                                            Descripcion = readerZonaTrabajo.GetString(1)
-                                        };
-
-                                        salaDto.Zona.Add(zonaTrabajo);
-                                    }
-                                }
-                            }
-
-                            // Puestos de trabajo para esta sala
-                            string queryPuestosTrabajo = "SELECT IdPuestoTrabajo, URL_Imagen, CodigoMesa, Disponible, Bloqueado FROM PuestosTrabajo WHERE IdSala = @idSala";
-                            using (var commandPuestoTrabajo = new SqlCommand(queryPuestosTrabajo, connection))
-                            {
-                                commandPuestoTrabajo.Parameters.AddWithValue("@idSala", salaDto.IdSala);
-                                using (var readerPuestosTrabajos = await commandPuestoTrabajo.ExecuteReaderAsync())
-                                {
-                                    while (await readerPuestosTrabajos.ReadAsync())
-                                    {
-                                        var puestoTrabajo = new PuestosTrabajoDTO
-                                        {
-                                            IdPuestoTrabajo = readerPuestosTrabajos.GetInt32(0),
-                                            URL_Imagen = readerPuestosTrabajos.GetString(1),
-                                            CodigoMesa = readerPuestosTrabajos.GetInt32(2),
-                                            Disponible = readerPuestosTrabajos.GetBoolean(3),
-                                            Bloqueado = readerPuestosTrabajos.GetBoolean(4)
-                                        };
-
-                                        salaDto.Puestos.Add(puestoTrabajo);
-                                    }
-                                }
-                            }
-
-                            salasDto.Add(salaDto);
-                        }
-                    }
-                }
-            }
-
-            return salasDto;
-        }
-
-        public async Task<SalasDTO> GetByIdAsync(int id)
-        {
-            SalasDTO salaDto = null;
-
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                await connection.OpenAsync();
-                string query = @"
-            SELECT sala.IdSala, sala.Nombre, sala.URL_Imagen, sala.Capacidad, sala.IdSede, sala.Precio, sala.Bloqueado, 
-                   ts.NumeroMesas, ts.CapacidadAsientos, ts.EsPrivada 
-            FROM Salas sala 
-            INNER JOIN TiposSalas ts ON sala.IdTipoSala = ts.IdTipoSala 
-            WHERE sala.IdSala = @IdSala";
-
-                using (var command = new SqlCommand(query, connection))
-                {
-                    command.Parameters.AddWithValue("@IdSala", id);
-                    using (var reader = await command.ExecuteReaderAsync())
-                    {
-                        if (await reader.ReadAsync())
-                        {
-                            salaDto = new SalasDTO
-                            {
-                                IdSala = reader.GetInt32(0),
-                                Nombre = reader.GetString(1),
-                                URL_Imagen = reader.GetString(2),
-                                Capacidad = reader.GetInt32(3),
-                                IdSede = reader.GetInt32(4),
-                                Precio = (double)reader.GetDecimal(5),
-                                Bloqueado = reader.GetBoolean(6),
-                                Zona = new List<ZonasTrabajoDTO>(),
-                                Puestos = new List<PuestosTrabajoDTO>()
-                            };
-                        }
-                    }
-                }
-
-                if (salaDto != null)
-                {
                     // Zonas de trabajo para esta sala
                     string queryZonasTrabajo = "SELECT IdZonaTrabajo, Descripcion FROM ZonasTrabajo WHERE IdSala = @idSala";
                     using (var commandZonaTrabajo = new SqlCommand(queryZonasTrabajo, connection))
@@ -139,18 +51,22 @@ namespace CoWorking.Repositories
                         {
                             while (await readerZonaTrabajo.ReadAsync())
                             {
-                                var zonaTrabajo = new ZonasTrabajoDTO
+                                salaDto.Zona.Add(new ZonasTrabajoDTO
                                 {
                                     IdZonaTrabajo = readerZonaTrabajo.GetInt32(0),
                                     Descripcion = readerZonaTrabajo.GetString(1)
-                                };
-                                salaDto.Zona.Add(zonaTrabajo);
+                                });
                             }
                         }
                     }
 
                     // Puestos de trabajo para esta sala
-                    string queryPuestosTrabajo = "SELECT IdPuestoTrabajo, URL_Imagen, CodigoMesa, Disponible, Bloqueado FROM PuestosTrabajo WHERE IdSala = @idSala";
+                    string queryPuestosTrabajo = @"
+                        SELECT 
+                            IdPuestoTrabajo, URL_Imagen, CodigoMesa, Disponible, Bloqueado 
+                        FROM PuestosTrabajo 
+                        WHERE IdSala = @idSala";
+                    
                     using (var commandPuestoTrabajo = new SqlCommand(queryPuestosTrabajo, connection))
                     {
                         commandPuestoTrabajo.Parameters.AddWithValue("@idSala", salaDto.IdSala);
@@ -158,23 +74,108 @@ namespace CoWorking.Repositories
                         {
                             while (await readerPuestosTrabajos.ReadAsync())
                             {
-                                var puestoTrabajo = new PuestosTrabajoDTO
+                                salaDto.Puestos.Add(new PuestosTrabajoDTO
                                 {
                                     IdPuestoTrabajo = readerPuestosTrabajos.GetInt32(0),
                                     URL_Imagen = readerPuestosTrabajos.GetString(1),
                                     CodigoMesa = readerPuestosTrabajos.GetInt32(2),
                                     Disponible = readerPuestosTrabajos.GetBoolean(3),
                                     Bloqueado = readerPuestosTrabajos.GetBoolean(4)
-                                };
-                                salaDto.Puestos.Add(puestoTrabajo);
+                                });
                             }
                         }
+                    }
+
+                    salasDto.Add(salaDto);
+                }
+            }
+        }
+    }
+
+    return salasDto;
+}
+
+   public async Task<SalasDTO> GetByIdAsync(int id)
+{
+    SalasDTO salaDto = null;
+
+    using (var connection = new SqlConnection(_connectionString))
+    {
+        await connection.OpenAsync();
+        string query = @"
+        SELECT IdSala, Nombre, URL_Imagen, Capacidad, IdTipoSala, IdSede, Bloqueado FROM Salas WHERE IdSala = @IdSala";
+
+        using (var command = new SqlCommand(query, connection))
+        {
+            command.Parameters.AddWithValue("@IdSala", id);
+            using (var reader = await command.ExecuteReaderAsync())
+            {
+                if (await reader.ReadAsync())
+                {
+                    salaDto = new SalasDTO
+                    {
+                        IdSala = reader.GetInt32(0),
+                        Nombre = reader.GetString(1),
+                        URL_Imagen = reader.GetString(2),
+                        Capacidad = reader.GetInt32(3),
+                        IdTipoSala = reader.GetInt32(4),
+                        IdSede = reader.GetInt32(5),
+                        Bloqueado = reader.GetBoolean(6),
+                        Zona = new List<ZonasTrabajoDTO>(),
+                        Puestos = new List<PuestosTrabajoDTO>()
+                    };
+                }
+            }
+        }
+
+        if (salaDto != null)
+        {
+            // Zonas de trabajo para esta sala
+            string queryZonasTrabajo = "SELECT IdZonaTrabajo, Descripcion FROM ZonasTrabajo WHERE IdSala = @idSala";
+            using (var commandZonaTrabajo = new SqlCommand(queryZonasTrabajo, connection))
+            {
+                commandZonaTrabajo.Parameters.AddWithValue("@idSala", salaDto.IdSala);
+                using (var readerZonaTrabajo = await commandZonaTrabajo.ExecuteReaderAsync())
+                {
+                    while (await readerZonaTrabajo.ReadAsync())
+                    {
+                        var zonaTrabajo = new ZonasTrabajoDTO
+                        {
+                            IdZonaTrabajo = readerZonaTrabajo.GetInt32(0),
+                            Descripcion = readerZonaTrabajo.GetString(1)
+                        };
+                        salaDto.Zona.Add(zonaTrabajo);
                     }
                 }
             }
 
-            return salaDto; // Returns null if no sala is found with the given id
+            // Puestos de trabajo para esta sala
+            string queryPuestosTrabajo = "SELECT IdPuestoTrabajo, URL_Imagen, CodigoMesa, Disponible, Bloqueado FROM PuestosTrabajo WHERE IdSala = @idSala";
+            using (var commandPuestoTrabajo = new SqlCommand(queryPuestosTrabajo, connection))
+            {
+                commandPuestoTrabajo.Parameters.AddWithValue("@idSala", salaDto.IdSala);
+                using (var readerPuestosTrabajos = await commandPuestoTrabajo.ExecuteReaderAsync())
+                {
+                    while (await readerPuestosTrabajos.ReadAsync())
+                    {
+                        var puestoTrabajo = new PuestosTrabajoDTO
+                        {
+                            IdPuestoTrabajo = readerPuestosTrabajos.GetInt32(0),
+                            URL_Imagen = readerPuestosTrabajos.GetString(1),
+                            CodigoMesa = readerPuestosTrabajos.GetInt32(2),
+                            Disponible = readerPuestosTrabajos.GetBoolean(3),
+                            Bloqueado = readerPuestosTrabajos.GetBoolean(4)
+                        };
+                        salaDto.Puestos.Add(puestoTrabajo);
+                    }
+                }
+            }
         }
+    }
+
+    return salaDto; // Retorna null si no encuentra la sala
+}
+
 public async Task AddAsync(SalasDTO salaDto)
 {
     using (var connection = new SqlConnection(_connectionString))

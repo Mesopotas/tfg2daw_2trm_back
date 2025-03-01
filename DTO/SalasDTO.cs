@@ -8,12 +8,10 @@ namespace Models
         public string Nombre { get; set; }
         public string URL_Imagen { get; set; }
         public int Capacidad { get; set; }
-        public int IdSede { get; set; }
-        public double Precio { get; set; }
-        public bool Bloqueado { get; set; }
         public int IdTipoSala { get; set; }
 
-
+        public int IdSede { get; set; }
+        public bool Bloqueado { get; set; }
         public List<ZonasTrabajoDTO> Zona { get; set; } = new List<ZonasTrabajoDTO>();
         public List<PuestosTrabajoDTO> Puestos { get; set; } = new List<PuestosTrabajoDTO>();
     }
