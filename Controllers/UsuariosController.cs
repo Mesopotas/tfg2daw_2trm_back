@@ -89,7 +89,21 @@ namespace CoWorking.Controllers
             return Ok(clientes);
         }
 
+        [HttpGet("byIdConJWT")]
+        public async Task<IActionResult> GetUsuarioFromJwt()
+        {
+            var user = User; // ' User es un ClaimsPrincipal del JWT
 
+            // llamar el nuevo metodo que usa el getbyid sacado de los claims del JWT
+            var usuario = await _serviceUsuarios.GetUsuarioFromJwtAsync(user);
+
+            if (usuario == null)
+            {
+                return NotFound("Usuario no encontrado.");
+            }
+
+            return Ok(usuario);
+        }
     
     }
 }
