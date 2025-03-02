@@ -21,7 +21,7 @@ namespace CoWorking.Repositories
             {
                 await connection.OpenAsync();
 
-                string query = "SELECT IdReserva, IdUsuario, Fecha, Descripcion FROM Reservas";
+                string query = "SELECT IdReserva, IdUsuario, Fecha, Descripcion, PrecioTotal FROM Reservas";
                 using (var command = new SqlCommand(query, connection))
                 {
                     using (var reader = await command.ExecuteReaderAsync())
@@ -33,7 +33,8 @@ namespace CoWorking.Repositories
                                 IdReserva = reader.GetInt32(0),
                                 IdUsuario = reader.GetInt32(1),
                                 Fecha = reader.GetDateTime(2),
-                                Descripcion = reader.GetString(3)
+                                Descripcion = reader.GetString(3),
+                                PrecioTotal = (double)reader.GetDecimal(4)
                             };
 
                             reservas.Add(reserva);
@@ -52,7 +53,7 @@ namespace CoWorking.Repositories
             {
                 await connection.OpenAsync();
 
-                string query = "SELECT IdReserva, IdUsuario, Fecha, Descripcion FROM Reservas WHERE idRol = @Id";
+                string query = "SELECT IdReserva, IdUsuario, Fecha, Descripcion, PrecioTotal FROM Reservas WHERE IdReserva = @Id";
                 using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@Id", id);
@@ -66,7 +67,9 @@ namespace CoWorking.Repositories
                                 IdReserva = reader.GetInt32(0),
                                 IdUsuario = reader.GetInt32(1),
                                 Fecha = reader.GetDateTime(2),
-                                Descripcion = reader.GetString(3)
+                                Descripcion = reader.GetString(3),
+                                PrecioTotal = (double)reader.GetDecimal(4)
+                                
                             };
 
                         }
@@ -82,13 +85,14 @@ namespace CoWorking.Repositories
             {
                 await connection.OpenAsync();
 
-                string query = "INSERT INTO Reservas (IdUsuario, Fecha, Descripcion) VALUES (@IdUsuario, @Fecha, @Descripcion)";
+                string query = "INSERT INTO Reservas (IdUsuario, Fecha, Descripcion, PrecioTotal) VALUES (@IdUsuario, @Fecha, @Descripcion, @PrecioTotal)";
 
                 using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@IdUsuario", reserva.IdUsuario);
                     command.Parameters.AddWithValue("@Fecha", DateTime.Now);
                     command.Parameters.AddWithValue("@Descripcion", reserva.Descripcion);
+                    command.Parameters.AddWithValue("@PrecioTotal", reserva.PrecioTotal);
                     await command.ExecuteNonQueryAsync();
                 }
             }
@@ -100,7 +104,7 @@ namespace CoWorking.Repositories
             {
                 await connection.OpenAsync();
 
-                string query = "UPDATE Reservas SET Descripcion = @Descripcion WHERE idRol = @IdRol";
+                string query = "UPDATE Reservas SET Descripcion = @Descripcion WHERE IdReserva = @IdReserva";
 
                 using (var command = new SqlCommand(query, connection))
                 {
@@ -116,10 +120,10 @@ namespace CoWorking.Repositories
             {
                 await connection.OpenAsync();
 
-                string query = "DELETE FROM Reservas WHERE idRol = @IdRol";
+                string query = "DELETE FROM Reservas WHERE IdReserva = @IdReserva";
                 using (var command = new SqlCommand(query, connection))
                 {
-                    command.Parameters.AddWithValue("@IdRol", id);
+                    command.Parameters.AddWithValue("@IdReserva", id);
 
                     await command.ExecuteNonQueryAsync();
                 }
