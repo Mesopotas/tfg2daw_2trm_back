@@ -32,8 +32,8 @@ namespace CoWorking.Repositories
                             {
                                 IdReserva = reader.GetInt32(0),
                                 IdUsuario = reader.GetInt32(1),
-                                Fecha = reader.GetDateTime(3),
-                                Descripcion = reader.GetString(4)
+                                Fecha = reader.GetDateTime(2),
+                                Descripcion = reader.GetString(3)
                             };
 
                             reservas.Add(reserva);
@@ -65,8 +65,8 @@ namespace CoWorking.Repositories
                             {
                                 IdReserva = reader.GetInt32(0),
                                 IdUsuario = reader.GetInt32(1),
-                                Fecha = reader.GetDateTime(3),
-                                Descripcion = reader.GetString(4)
+                                Fecha = reader.GetDateTime(2),
+                                Descripcion = reader.GetString(3)
                             };
 
                         }
@@ -87,7 +87,7 @@ namespace CoWorking.Repositories
                 using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@IdUsuario", reserva.IdUsuario);
-                    command.Parameters.AddWithValue("@Fecha", reserva.Descripcion);
+                    command.Parameters.AddWithValue("@Fecha", DateTime.Now);
                     command.Parameters.AddWithValue("@Descripcion", reserva.Descripcion);
                     await command.ExecuteNonQueryAsync();
                 }
