@@ -21,7 +21,7 @@ namespace CoWorking.Repositories
             {
                 await connection.OpenAsync();
 
-                string query = "SELECT IdReserva, IdUsuario, Fecha, Descripcion FROM Reservas";
+                string query = "SELECT IdReserva, IdUsuario, Fecha, Descripcion, PrecioTotal FROM Reservas";
                 using (var command = new SqlCommand(query, connection))
                 {
                     using (var reader = await command.ExecuteReaderAsync())
@@ -33,7 +33,8 @@ namespace CoWorking.Repositories
                                 IdReserva = reader.GetInt32(0),
                                 IdUsuario = reader.GetInt32(1),
                                 Fecha = reader.GetDateTime(2),
-                                Descripcion = reader.GetString(3)
+                                Descripcion = reader.GetString(3),
+                                PrecioTotal = reader.GetDouble(4)
                             };
 
                             reservas.Add(reserva);
@@ -52,7 +53,7 @@ namespace CoWorking.Repositories
             {
                 await connection.OpenAsync();
 
-                string query = "SELECT IdReserva, IdUsuario, Fecha, Descripcion FROM Reservas WHERE idRol = @Id";
+                string query = "SELECT IdReserva, IdUsuario, Fecha, Descripcion, PrecioTotal FROM Reservas WHERE idRol = @Id";
                 using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@Id", id);
@@ -66,7 +67,9 @@ namespace CoWorking.Repositories
                                 IdReserva = reader.GetInt32(0),
                                 IdUsuario = reader.GetInt32(1),
                                 Fecha = reader.GetDateTime(2),
-                                Descripcion = reader.GetString(3)
+                                Descripcion = reader.GetString(3),
+                                PrecioTotal = reader.GetDouble(4)
+                                
                             };
 
                         }
