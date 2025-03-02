@@ -82,7 +82,7 @@ namespace CoWorking.Repositories
             {
                 await connection.OpenAsync();
 
-                string query = "INSERT INTO DetalleReservas (Descripcion, IdPuestoTrabajo) VALUES (@Descripcion, @IdPuestoTrabajo)";
+                string query = "INSERT INTO DetallesReservas (Descripcion, IdPuestoTrabajo) VALUES (@Descripcion, @IdPuestoTrabajo)";
 
                 using (var command = new SqlCommand(query, connection))
                 {
@@ -117,7 +117,7 @@ namespace CoWorking.Repositories
             {
                 await connection.OpenAsync();
 
-                string query = "DELETE FROM DetalleReservas WHERE idDetalleReserva = @IdDetalleReserva";
+                string query = "DELETE FROM DetallesReservas WHERE idDetalleReserva = @IdDetalleReserva";
                 using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@IdDetalleReserva", id);
