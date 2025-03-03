@@ -7,7 +7,7 @@ namespace CoWorking.Repositories
     {
         Task<List<Reservas>> GetAllAsync();
         Task<Reservas?> GetByIdAsync(int id);
-        Task AddAsync(Reservas reservas);
+        Task AddAsync(Reservas reserva);
         Task UpdateAsync(Reservas reservas);
         Task DeleteAsync(int id);
 

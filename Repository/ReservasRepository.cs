@@ -69,7 +69,7 @@ namespace CoWorking.Repositories
                                 Fecha = reader.GetDateTime(2),
                                 Descripcion = reader.GetString(3),
                                 PrecioTotal = (double)reader.GetDecimal(4)
-                                
+
                             };
 
                         }
@@ -85,14 +85,36 @@ namespace CoWorking.Repositories
             {
                 await connection.OpenAsync();
 
-                string query = "INSERT INTO Reservas (IdUsuario, Fecha, Descripcion, PrecioTotal) VALUES (@IdUsuario, @Fecha, @Descripcion, @PrecioTotal)";
+                // Consultas SQL para obtener los datos necesarios
+                string queryIdUsuario = "SELECT IdUsuario FROM Usuarios WHERE IdUsuario = @IdUsuario";
+                string queryPrecioTotal = "SELECT SUM(Precio) FROM Lineas WHERE IdReserva = @IdReserva";
 
-                using (var command = new SqlCommand(query, connection))
+                int idUsuario;
+                using (var command = new SqlCommand(queryIdUsuario, connection))
                 {
                     command.Parameters.AddWithValue("@IdUsuario", reserva.IdUsuario);
+                    var result = await command.ExecuteScalarAsync();
+                    idUsuario = result != null ? Convert.ToInt32(result) : 0; // si no es nulo, lo parsea a int, si es nulo, le asigna valor 0, esto hará q de error identificable en lugar de un valor nulo no esperado
+                }
+
+                // Calcular el PrecioTotal (sumando los precios de las lineas de la reserva)
+                decimal precioTotal = 0;
+                using (var command = new SqlCommand(queryPrecioTotal, connection))
+                {
+                    command.Parameters.AddWithValue("@IdReserva", reserva.IdReserva);
+                    var result = await command.ExecuteScalarAsync();
+                    precioTotal = result != null ? Convert.ToDecimal(result) : 0m; // si no es nulo, lo parsea a decimal, si es nulo, le asigna valor 0 (0m es el valor en decimal de 0)
+                }
+
+                // insert final en reservas con toda la info
+                string queryInsert = "INSERT INTO Reservas (IdUsuario, Fecha, Descripcion, PrecioTotal) VALUES (@IdUsuario, @Fecha, @Descripcion, @PrecioTotal)";
+                using (var command = new SqlCommand(queryInsert, connection))
+                {
+                    command.Parameters.AddWithValue("@IdUsuario", idUsuario); // idUsuario previo
                     command.Parameters.AddWithValue("@Fecha", DateTime.Now);
                     command.Parameters.AddWithValue("@Descripcion", reserva.Descripcion);
-                    command.Parameters.AddWithValue("@PrecioTotal", reserva.PrecioTotal);
+                    command.Parameters.AddWithValue("@PrecioTotal", precioTotal);
+
                     await command.ExecuteNonQueryAsync();
                 }
             }
