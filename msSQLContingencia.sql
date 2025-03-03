@@ -59,12 +59,6 @@ CREATE TABLE TiposSalas ( -- privada o comun
     IdTipoPuestoTrabajo INT,
     FOREIGN KEY (IdTipoPuestoTrabajo) REFERENCES TiposPuestosTrabajo(IdTipoPuestoTrabajo)
 );
-   -- INSERT para los 2 tipos de sala iniciales, habrá que cambiar los condicionales en el back
-    INSERT INTO TiposSalas (EsPrivada, Descripcion)
-    VALUES (0, 'Sala Publica'); -- EsPrivada = 0 osea False, tendrá ID = 1
-
-    INSERT INTO TiposSalas (EsPrivada, Descripcion)
-    VALUES (1, 'Sala Privada'); -- EsPrivada = 1 osea True, tendrá ID = 2
 
 CREATE TABLE Salas ( -- salas dentro de cada sede
     IdSala INT IDENTITY(1,1) PRIMARY KEY,
@@ -151,14 +145,15 @@ CREATE TABLE Reservas ( -- reservas realizadas por los usuarios
     IdUsuario INT,
     Fecha DATETIME,
     Descripcion VARCHAR(250),
-    DescuentoAplicado DECIMAL(10,2) DEFAULT 0,
+    PrecioTotal DECIMAL(10,2),
     FOREIGN KEY (IdUsuario) REFERENCES Usuarios(IdUsuario)
 );
 
 CREATE TABLE Lineas ( -- reserva relacionada con sus detalles especificos, aquello que veria el usuario a modo factura
-    IdLinea UNIQUEIDENTIFIER DEFAULT NEWID() PRIMARY KEY,
+    IdLinea INT IDENTITY(1,1) PRIMARY KEY,
     IdReserva INT,
     IdDetalleReserva INT,
+    Precio DECIMAL(10,2) DEFAULT (0),
     FOREIGN KEY (IdReserva) REFERENCES Reservas(IdReserva),
     FOREIGN KEY (IdDetalleReserva) REFERENCES DetallesReservas(IdDetalleReserva)
 );
