@@ -283,7 +283,6 @@ public async Task<List<SalasDTO>> GetByIdSedeAsync(int id)
                 }
             }
 
-            // Puestos de trabajo
             string queryPuestosTrabajo = "SELECT IdPuestoTrabajo, URL_Imagen, CodigoMesa, Disponible, Bloqueado FROM PuestosTrabajo WHERE IdSala = @idSala";
             using (var commandPuestoTrabajo = new SqlCommand(queryPuestosTrabajo, connection))
             {
@@ -301,6 +300,26 @@ public async Task<List<SalasDTO>> GetByIdSedeAsync(int id)
                             Bloqueado = readerPuestosTrabajos.GetBoolean(4),
                             Disponibilidades = new List<DisponibilidadDTO>()
                         };
+
+                        string queryDisponibilidades = "SELECT IdDisponibilidad, Fecha, Estado, IdTramoHorario FROM Disponibilidades WHERE IdPuestoTrabajo = @idPuestoTrabajo";
+                        using (var commandDisponibilidad = new SqlCommand(queryDisponibilidades, connection))
+                        {
+                            commandDisponibilidad.Parameters.AddWithValue("@idPuestoTrabajo", puesto.IdPuestoTrabajo);
+                            using (var readerDisponibilidades = await commandDisponibilidad.ExecuteReaderAsync())
+                            {
+                                while (await readerDisponibilidades.ReadAsync())
+                                {
+                                    puesto.Disponibilidades.Add(new DisponibilidadDTO
+                                    {
+                                        IdDisponibilidad = readerDisponibilidades.GetInt32(0),
+                                        Fecha = readerDisponibilidades.GetInt32(1),
+                                        Estado = readerDisponibilidades.GetBoolean(2),
+                                        IdTramoHorario = readerDisponibilidades.GetInt32(3)
+                                    });
+                                }
+                            }
+                        }
+
                         salaDto.Puestos.Add(puesto);
                     }
                 }

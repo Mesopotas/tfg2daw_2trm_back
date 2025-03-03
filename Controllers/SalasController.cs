@@ -38,16 +38,18 @@ namespace CoWorking.Controllers
             return Ok(sala);
         }
 
-        [HttpGet("/idsede/{id}")]
-        public async Task<ActionResult<Salas>> GetSalaSede(int id)
-        {
-            var sala = await _serviceSalas.GetByIdSedeAsync(id);
-            if (sala == null)
-            {
-                return NotFound();
-            }
-            return Ok(sala);
-        }
+[HttpGet("search")]
+public async Task<ActionResult<List<SalasDTO>>> GetSalaBySede([FromQuery] int idsede)
+{
+    var salas = await _serviceSalas.GetByIdSedeAsync(idsede);
+
+    if (salas == null || !salas.Any())
+    {
+        return NotFound("No se encontraron salas para la sede de ese id");
+    }
+
+    return Ok(salas);
+}
         [HttpPost]
         public async Task<ActionResult<Salas>> CreateSala(SalasDTO salas)
         {
@@ -55,25 +57,25 @@ namespace CoWorking.Controllers
             return CreatedAtAction(nameof(CreateSala), new { id = salas.IdSala }, salas);
         }
 
-/*
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateSala(int id, Salas updatedSalas)
-        {
-            var existingSala = await _serviceSalas.GetByIdAsync(id);
-            if (existingSala == null)
-            {
-                return NotFound();
-            }
-            existingSala.Nombre = updatedSalas.Nombre;
-            existingSala.Capacidad = updatedSalas.Capacidad;
-            existingSala.IdTipoSala = updatedSalas.IdTipoSala;
-            existingSala.IdSede = updatedSalas.IdSede;
+        /*
+                [HttpPut("{id}")]
+                public async Task<IActionResult> UpdateSala(int id, Salas updatedSalas)
+                {
+                    var existingSala = await _serviceSalas.GetByIdAsync(id);
+                    if (existingSala == null)
+                    {
+                        return NotFound();
+                    }
+                    existingSala.Nombre = updatedSalas.Nombre;
+                    existingSala.Capacidad = updatedSalas.Capacidad;
+                    existingSala.IdTipoSala = updatedSalas.IdTipoSala;
+                    existingSala.IdSede = updatedSalas.IdSede;
 
 
-            await _serviceSalas.UpdateAsync(existingSala);
-            return NoContent();
-        }
-*/
+                    await _serviceSalas.UpdateAsync(existingSala);
+                    return NoContent();
+                }
+        */
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteSala(int id)
         {
