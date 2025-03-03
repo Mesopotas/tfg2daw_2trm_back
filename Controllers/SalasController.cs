@@ -38,7 +38,16 @@ namespace CoWorking.Controllers
             return Ok(sala);
         }
 
-
+        [HttpGet("/idsede/{id}")]
+        public async Task<ActionResult<Salas>> GetSalaSede(int id)
+        {
+            var sala = await _serviceSalas.GetByIdSedeAsync(id);
+            if (sala == null)
+            {
+                return NotFound();
+            }
+            return Ok(sala);
+        }
         [HttpPost]
         public async Task<ActionResult<Salas>> CreateSala(SalasDTO salas)
         {

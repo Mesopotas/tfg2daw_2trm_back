@@ -28,6 +28,12 @@ namespace CoWorking.Service
             return await _salasRepository.GetByIdAsync(id);
         }
 
+        public async Task<List<SalasDTO>> GetByIdSedeAsync(int id)
+        {
+            return await _salasRepository.GetByIdSedeAsync(id);
+        }
+
+
         public async Task AddAsync(SalasDTO sala)
         {
             await _salasRepository.AddAsync(sala);
