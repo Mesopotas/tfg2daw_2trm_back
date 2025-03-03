@@ -1,5 +1,6 @@
 using Microsoft.Data.SqlClient;
 using Models;
+using CoWorking.DTO;
 
 namespace CoWorking.Repositories
 {
@@ -20,7 +21,7 @@ namespace CoWorking.Repositories
             {
                 await connection.OpenAsync();
 
-                string query = "SELECT IdReserva, IdUsuario, IdLinea FROM Reservas";
+                string query = "SELECT IdReserva, IdUsuario, Fecha, Descripcion, PrecioTotal FROM Reservas";
                 using (var command = new SqlCommand(query, connection))
                 {
                     using (var reader = await command.ExecuteReaderAsync())
@@ -31,7 +32,9 @@ namespace CoWorking.Repositories
                             {
                                 IdReserva = reader.GetInt32(0),
                                 IdUsuario = reader.GetInt32(1),
-                                IdLinea = reader.GetInt32(2)
+                                Fecha = reader.GetDateTime(2),
+                                Descripcion = reader.GetString(3),
+                                PrecioTotal = (double)reader.GetDecimal(4)
                             };
 
                             reservas.Add(reserva);
@@ -50,7 +53,7 @@ namespace CoWorking.Repositories
             {
                 await connection.OpenAsync();
 
-                string query = " SELECT IdReserva, IdUsuario, IdLinea FROM Reservas WHERE IdReserva = @Id";
+                string query = "SELECT IdReserva, IdUsuario, Fecha, Descripcion, PrecioTotal FROM Reservas WHERE IdReserva = @Id";
                 using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@Id", id);
@@ -63,47 +66,53 @@ namespace CoWorking.Repositories
                             {
                                 IdReserva = reader.GetInt32(0),
                                 IdUsuario = reader.GetInt32(1),
-                                IdLinea = reader.GetInt32(2)
+                                Fecha = reader.GetDateTime(2),
+                                Descripcion = reader.GetString(3),
+                                PrecioTotal = (double)reader.GetDecimal(4)
+                                
                             };
+
                         }
                     }
                 }
             }
             return reserva;
         }
-     public async Task AddAsync(Reservas reserva)
-{
-    using (var connection = new SqlConnection(_connectionString))
-    {
-        await connection.OpenAsync();
 
-        string query = "INSERT INTO Reservas (IdUsuario, IdLinea) VALUES (@IdUsuario, @IdLinea)";
-        
-        using (var command = new SqlCommand(query, connection))
+        public async Task AddAsync(Reservas reserva)
         {
-            command.Parameters.AddWithValue("@IdUsuario", reserva.IdUsuario);
-            command.Parameters.AddWithValue("@IdLinea", reserva.IdLinea);
-            await command.ExecuteNonQueryAsync();
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+
+                string query = "INSERT INTO Reservas (IdUsuario, Fecha, Descripcion, PrecioTotal) VALUES (@IdUsuario, @Fecha, @Descripcion, @PrecioTotal)";
+
+                using (var command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@IdUsuario", reserva.IdUsuario);
+                    command.Parameters.AddWithValue("@Fecha", DateTime.Now);
+                    command.Parameters.AddWithValue("@Descripcion", reserva.Descripcion);
+                    command.Parameters.AddWithValue("@PrecioTotal", reserva.PrecioTotal);
+                    await command.ExecuteNonQueryAsync();
+                }
+            }
         }
-    }
-}
 
-public async Task UpdateAsync(Reservas reserva)
-{
-    using (var connection = new SqlConnection(_connectionString))
-    {
-        await connection.OpenAsync();
-
-        string query = "UPDATE Reservas SET IdUsuario = @IdUsuario, IdLinea = @IdLinea WHERE IdReserva = @IdReserva";
-
-        using (var command = new SqlCommand(query, connection))
+        public async Task UpdateAsync(Reservas reserva)
         {
-            command.Parameters.AddWithValue("@IdUsuario", reserva.IdUsuario);
-            command.Parameters.AddWithValue("@IdLinea", reserva.IdLinea);
-            await command.ExecuteNonQueryAsync();
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+
+                string query = "UPDATE Reservas SET Descripcion = @Descripcion WHERE IdReserva = @IdReserva";
+
+                using (var command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@Descripcion", reserva.Descripcion);
+                    await command.ExecuteNonQueryAsync();
+                }
+            }
         }
-    }
-}
 
         public async Task DeleteAsync(int id)
         {
@@ -120,7 +129,5 @@ public async Task UpdateAsync(Reservas reserva)
                 }
             }
         }
-
-  
     }
 }

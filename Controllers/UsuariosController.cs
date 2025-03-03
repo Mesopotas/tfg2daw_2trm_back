@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using CoWorking.Repositories;
 using CoWorking.Service;
+using CoWorking.DTO;
 using Models;
 
 namespace CoWorking.Controllers
@@ -75,9 +76,34 @@ namespace CoWorking.Controllers
             }
             await _serviceUsuarios.DeleteAsync(id);
             return NoContent();
-
-
-
         }
+
+        [HttpGet("clientes/{email}")]
+        public async Task<ActionResult<List<UsuarioClienteDTO>>> GetClientesById(string email)
+        {
+            var clientes = await _serviceUsuarios.GetClientesByEmailAsync(email);
+            if (clientes.Count == 0)
+            {
+                return NotFound("No se encontró ninguna cuenta asociada a ese email.");
+            }
+            return Ok(clientes);
+        }
+
+        [HttpGet("byIdConJWT")]
+        public async Task<IActionResult> GetUsuarioFromJwt()
+        {
+            var user = User; // ' User es un ClaimsPrincipal del JWT
+
+            // llamar el nuevo metodo que usa el getbyid sacado de los claims del JWT
+            var usuario = await _serviceUsuarios.GetUsuarioFromJwtAsync(user);
+
+            if (usuario == null)
+            {
+                return NotFound("Usuario no encontrado.");
+            }
+
+            return Ok(usuario);
+        }
+    
     }
 }

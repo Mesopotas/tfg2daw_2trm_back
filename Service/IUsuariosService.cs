@@ -1,4 +1,6 @@
 using Models;
+using CoWorking.DTO;
+using System.Security.Claims;
 
 namespace CoWorking.Service
 {
@@ -9,5 +11,8 @@ namespace CoWorking.Service
         Task AddAsync(Usuarios usuario);
         Task UpdateAsync(Usuarios usuario);
         Task DeleteAsync(int id);
+        Task<List<UsuarioClienteDTO>> GetClientesByEmailAsync(string email);
+        Task<Usuarios?> GetUsuarioFromJwtAsync(ClaimsPrincipal user);
+
     }
 }

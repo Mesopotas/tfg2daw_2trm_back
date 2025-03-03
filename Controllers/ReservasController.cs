@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using CoWorking.Repositories;
 using CoWorking.Service;
+using CoWorking.DTO;
 using Models;
 
 namespace CoWorking.Controllers
@@ -9,7 +10,7 @@ namespace CoWorking.Controllers
     [ApiController]
     public class ReservasController : ControllerBase
     {
-        private static List<Reservas> reservas = new List<Reservas>();
+        private static List<Reservas> detalleReservas = new List<Reservas>();
 
         private readonly IReservasService _serviceReservas;
 
@@ -29,20 +30,20 @@ namespace CoWorking.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Reservas>> GetReserva(int id)
         {
-            var sala = await _serviceReservas.GetByIdAsync(id);
-            if (sala == null)
+            var detalleReservas = await _serviceReservas.GetByIdAsync(id);
+            if (detalleReservas == null)
             {
                 return NotFound();
             }
-            return Ok(sala);
+            return Ok(detalleReservas);
         }
 
 
         [HttpPost]
-        public async Task<ActionResult<Reservas>> CreateReserva(Reservas reserva)
+        public async Task<ActionResult<Reservas>> CreateReserva(Reservas reservas)
         {
-            await _serviceReservas.AddAsync(reserva);
-            return CreatedAtAction(nameof(CreateReserva), new { id = reserva.IdReserva }, reserva);
+            await _serviceReservas.AddAsync(reservas);
+            return CreatedAtAction(nameof(CreateReserva), new { id = reservas.IdReserva }, reservas);
         }
 
 
@@ -54,8 +55,7 @@ namespace CoWorking.Controllers
             {
                 return NotFound();
             }
-            existingReserva.IdUsuario = updatedReservas.IdUsuario;
-            existingReserva.IdLinea = updatedReservas.IdLinea;
+            existingReserva.Descripcion = updatedReservas.Descripcion;
 
 
             await _serviceReservas.UpdateAsync(existingReserva);
@@ -65,16 +65,13 @@ namespace CoWorking.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteReserva(int id)
         {
-            var sala = await _serviceReservas.GetByIdAsync(id);
-            if (sala == null)
+            var detalleReservas = await _serviceReservas.GetByIdAsync(id);
+            if (detalleReservas == null)
             {
                 return NotFound();
             }
             await _serviceReservas.DeleteAsync(id);
             return NoContent();
-
-
-
         }
 
     }

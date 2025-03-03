@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CoWorking.Repositories;
+using CoWorking.DTO;
 using CoWorking.Service;
 
 namespace CoWorking.Service
@@ -21,7 +22,6 @@ namespace CoWorking.Service
         {
             return await _reservasRepository.GetAllAsync();
         }
-
 
         public async Task<Reservas?> GetByIdAsync(int id)
         {
@@ -46,8 +46,9 @@ namespace CoWorking.Service
                //return NotFound();
            }
            await _reservasRepository.DeleteAsync(id);
+           //return NoContent();
         }
 
 
-    }
+                }
 }

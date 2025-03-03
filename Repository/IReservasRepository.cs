@@ -1,4 +1,5 @@
 using Models;
+using CoWorking.DTO;
 
 namespace CoWorking.Repositories
 {
@@ -6,8 +7,9 @@ namespace CoWorking.Repositories
     {
         Task<List<Reservas>> GetAllAsync();
         Task<Reservas?> GetByIdAsync(int id);
-        Task AddAsync(Reservas reserva);
-        Task UpdateAsync(Reservas reserva);
+        Task AddAsync(Reservas reservas);
+        Task UpdateAsync(Reservas reservas);
         Task DeleteAsync(int id);
+
     }
 }

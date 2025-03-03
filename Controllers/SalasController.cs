@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using CoWorking.Repositories;
 using CoWorking.Service;
+using CoWorking.DTO;
 using Models;
 
 namespace CoWorking.Controllers
@@ -9,7 +10,7 @@ namespace CoWorking.Controllers
     [ApiController]
     public class SalasController : ControllerBase
     {
-        private static List<Salas> salas = new List<Salas>();
+        private static List<Salas> sala = new List<Salas>();
 
         private readonly ISalasService _serviceSalas;
 
@@ -37,29 +38,44 @@ namespace CoWorking.Controllers
             return Ok(sala);
         }
 
+[HttpGet("search")]
+public async Task<ActionResult<List<SalasDTO>>> GetSalaBySede([FromQuery] int idsede)
+{
+    var salas = await _serviceSalas.GetByIdSedeAsync(idsede);
 
+    if (salas == null || !salas.Any())
+    {
+        return NotFound("No se encontraron salas para la sede de ese id");
+    }
+
+    return Ok(salas);
+}
         [HttpPost]
-        public async Task<ActionResult<Salas>> CreateSala(Salas salas)
+        public async Task<ActionResult<Salas>> CreateSala(SalasDTO salas)
         {
             await _serviceSalas.AddAsync(salas);
             return CreatedAtAction(nameof(CreateSala), new { id = salas.IdSala }, salas);
         }
 
+        /*
+                [HttpPut("{id}")]
+                public async Task<IActionResult> UpdateSala(int id, Salas updatedSalas)
+                {
+                    var existingSala = await _serviceSalas.GetByIdAsync(id);
+                    if (existingSala == null)
+                    {
+                        return NotFound();
+                    }
+                    existingSala.Nombre = updatedSalas.Nombre;
+                    existingSala.Capacidad = updatedSalas.Capacidad;
+                    existingSala.IdTipoSala = updatedSalas.IdTipoSala;
+                    existingSala.IdSede = updatedSalas.IdSede;
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateSala(int id, Salas updatedSalas)
-        {
-            var existingSala = await _serviceSalas.GetByIdAsync(id);
-            if (existingSala == null)
-            {
-                return NotFound();
-            }
-            existingSala.Nombre = updatedSalas.Nombre;
 
-            await _serviceSalas.UpdateAsync(existingSala);
-            return NoContent();
-        }
-
+                    await _serviceSalas.UpdateAsync(existingSala);
+                    return NoContent();
+                }
+        */
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteSala(int id)
         {
@@ -70,9 +86,6 @@ namespace CoWorking.Controllers
             }
             await _serviceSalas.DeleteAsync(id);
             return NoContent();
-
-
-
         }
 
     }

@@ -1,20 +1,22 @@
 namespace Models;
 
-public class Reservas{
+public class Reservas
+{
+    public int IdReserva { get; set; }
+    public int IdUsuario { get; set; }
+    public DateTime Fecha { get; set; }
+    public string Descripcion { get; set; }
+    public double PrecioTotal { get; set; }
 
-    public int IdReserva {get; set;}
-    public int IdUsuario  {get; set;}
-    public int IdLinea  {get; set;}
 
-    public Reservas(){}
+    public Reservas() { }
 
-    public Reservas(int idReserva, int idUsuario, int idLinea){
-
+    public Reservas(int idReserva, int idUsuario, DateTime fecha, string descripcion, double precioTotal)
+    {
         IdReserva = idReserva;
         IdUsuario = idUsuario;
-        IdLinea = idLinea;
-
+        Fecha = fecha;
+        Descripcion = descripcion;
+        PrecioTotal = precioTotal;
     }
-
-
 }

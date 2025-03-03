@@ -1,6 +1,7 @@
 using Models;
+using CoWorking.DTO;
 
-namespace CoWorking.Repositories
+namespace CoWorking.Service
 {
     public interface IReservasService
     {

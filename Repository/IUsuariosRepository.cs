@@ -1,4 +1,5 @@
 using Models;
+using CoWorking.DTO;
 
 namespace CoWorking.Repositories
 {
@@ -9,5 +10,9 @@ namespace CoWorking.Repositories
         Task AddAsync(Usuarios usuario);
         Task UpdateAsync(Usuarios usuario);
         Task DeleteAsync(int id);
+        Task<List<UsuarioClienteDTO>> GetClientesByEmailAsync(string email);
+
+         Task<UserDTOOut> GetUserFromCredentialsAsync(LoginDto login);
+         Task<UserDTOOut> AddUserFromCredentialsAsync(RegisterDTO register);
     }
 }
