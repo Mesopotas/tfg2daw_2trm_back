@@ -40,14 +40,14 @@ namespace CoWorking.Controllers
 
 
         [HttpPost]
-        public async Task<ActionResult<Reservas>> CreateReserva(Reservas reservas)
+        public async Task<ActionResult<ReservasDTO>> CreateReserva(ReservasDTO reservas)
         {
             await _serviceReservas.AddAsync(reservas);
             return CreatedAtAction(nameof(CreateReserva), new { id = reservas.IdReserva }, reservas);
         }
 
 
-        [HttpPut("{id}")]
+     /*   [HttpPut("{id}")]
         public async Task<IActionResult> UpdateReserva(int id, Reservas updatedReservas)
         {
             var existingReserva = await _serviceReservas.GetByIdAsync(id);
@@ -61,7 +61,7 @@ namespace CoWorking.Controllers
             await _serviceReservas.UpdateAsync(existingReserva);
             return NoContent();
         }
-
+*/
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteReserva(int id)
         {

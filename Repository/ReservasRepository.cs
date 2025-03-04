@@ -13,47 +13,84 @@ namespace CoWorking.Repositories
             _connectionString = connectionString;
         }
 
-        public async Task<List<Reservas>> GetAllAsync()
+        public async Task<List<ReservasDTO>> GetAllAsync()
         {
-            var reservas = new List<Reservas>();
+            var reservas = new List<ReservasDTO>();
 
             using (var connection = new SqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
 
-                string query = "SELECT IdReserva, IdUsuario, Fecha, Descripcion, PrecioTotal FROM Reservas";
-                using (var command = new SqlCommand(query, connection))
-                {
-                    using (var reader = await command.ExecuteReaderAsync())
-                    {
-                        while (await reader.ReadAsync())
-                        {
-                            var reserva = new Reservas
-                            {
-                                IdReserva = reader.GetInt32(0),
-                                IdUsuario = reader.GetInt32(1),
-                                Fecha = reader.GetDateTime(2),
-                                Descripcion = reader.GetString(3),
-                                PrecioTotal = (double)reader.GetDecimal(4)
-                            };
+                string query = @"
+                 SELECT  
+                reserva.IdReserva, reserva.Fecha, reserva.Descripcion, reserva.PrecioTotal,
+                usuario.IdUsuario, usuario.Nombre , usuario.Email,
+                detallesr.IdDetalleReserva, puesto.IdPuestoTrabajo, puesto.CodigoMesa, 
+                puesto.URL_Imagen, detallesr.Descripcion
+                FROM Reservas reserva
+                INNER JOIN Usuarios usuario ON reserva.IdUsuario = usuario.IdUsuario
+                INNER JOIN Lineas linea ON reserva.IdReserva = linea.IdReserva
+                INNER JOIN DetallesReservas detallesr ON linea.IdDetalleReserva = detallesr.IdDetalleReserva
+                INNER JOIN PuestosTrabajo puesto ON detallesr.IdPuestoTrabajo = puesto.IdPuestoTrabajo;";
 
-                            reservas.Add(reserva);
+
+                using (var command = new SqlCommand(query, connection))
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        var reserva = new ReservasDTO
+                        {
+                            IdReserva = reader.GetInt32(0),
+                            Fecha = reader.GetDateTime(1),
+                            ReservaDescripcion = reader.GetString(2),
+                            PrecioTotal = (double)reader.GetDecimal(3),
+                            UsuarioId = reader.GetInt32(4),
+                            UsuarioNombre = reader.GetString(5),
+                            UsuarioEmail = reader.GetString(6),
+                            DetallesReservas = new List<DetalleReservaDTO>()
+                        };
+
+                        if (!reader.IsDBNull(7))   // busca el detalle de la reserva si existe
+                        {
+                            reserva.DetallesReservas.Add(new DetalleReservaDTO
+                            {
+                                IdDetalleReserva = reader.GetInt32(7),
+                                IdPuestoTrabajo = reader.GetInt32(8),
+                                CodigoPuesto = reader.GetString(9),
+                                ImagenPuesto = reader.GetString(10),
+                                Descripcion = reader.GetString(11)
+                            });
                         }
+
+                        reservas.Add(reserva);
                     }
                 }
             }
             return reservas;
         }
 
-        public async Task<Reservas> GetByIdAsync(int id)
+        public async Task<ReservasDTO> GetByIdAsync(int id)
         {
-            Reservas reserva = null;
+            ReservasDTO reserva = null;
 
             using (var connection = new SqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
 
-                string query = "SELECT IdReserva, IdUsuario, Fecha, Descripcion, PrecioTotal FROM Reservas WHERE IdReserva = @Id";
+                string query = @"
+            SELECT  
+                reserva.IdReserva, reserva.Fecha, reserva.Descripcion, reserva.PrecioTotal,
+                usuario.IdUsuario, usuario.Nombre , usuario.Email,
+                detallesr.IdDetalleReserva, puesto.IdPuestoTrabajo, puesto.CodigoMesa, 
+                puesto.URL_Imagen, detallesr.Descripcion
+            FROM Reservas reserva
+            INNER JOIN Usuarios usuario ON reserva.IdUsuario = usuario.IdUsuario
+            INNER JOIN Lineas linea ON reserva.IdReserva = linea.IdReserva
+            INNER JOIN DetallesReservas detallesr ON linea.IdDetalleReserva = detallesr.IdDetalleReserva
+            INNER JOIN PuestosTrabajo puesto ON detallesr.IdPuestoTrabajo = puesto.IdPuestoTrabajo
+            WHERE reserva.IdReserva = @Id";
+
                 using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@Id", id);
@@ -62,16 +99,30 @@ namespace CoWorking.Repositories
                     {
                         if (await reader.ReadAsync())
                         {
-                            reserva = new Reservas
+                            reserva = new ReservasDTO
                             {
                                 IdReserva = reader.GetInt32(0),
-                                IdUsuario = reader.GetInt32(1),
-                                Fecha = reader.GetDateTime(2),
-                                Descripcion = reader.GetString(3),
-                                PrecioTotal = (double)reader.GetDecimal(4)
-
+                                Fecha = reader.GetDateTime(1),
+                                ReservaDescripcion = reader.GetString(2),
+                                PrecioTotal = (double)reader.GetDecimal(3),
+                                UsuarioId = reader.GetInt32(4),
+                                UsuarioNombre = reader.GetString(5),
+                                UsuarioEmail = reader.GetString(6),
+                                DetallesReservas = new List<DetalleReservaDTO>()
                             };
 
+
+                            if (!reader.IsDBNull(7))
+                            {
+                                reserva.DetallesReservas.Add(new DetalleReservaDTO
+                                {
+                                    IdDetalleReserva = reader.GetInt32(7),
+                                    IdPuestoTrabajo = reader.GetInt32(8),
+                                    CodigoPuesto = reader.GetString(9),
+                                    ImagenPuesto = reader.GetString(10),
+                                    Descripcion = reader.GetString(11)
+                                });
+                            }
                         }
                     }
                 }
@@ -79,46 +130,30 @@ namespace CoWorking.Repositories
             return reserva;
         }
 
-        public async Task AddAsync(Reservas reserva)
+        public async Task AddAsync(ReservasDTO reserva)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
 
-                // Consultas SQL para obtener los datos necesarios
-                string queryIdUsuario = "SELECT IdUsuario FROM Usuarios WHERE IdUsuario = @IdUsuario";
-                string queryPrecioTotal = "SELECT SUM(Precio) FROM Lineas WHERE IdReserva = @IdReserva";
+                // insert reserva, le procederá un insert en detalles reserva, y le seguirá un insert en Linea en el fronend con stores de pinia
+                string query = "INSERT INTO Reservas (IdUsuario, IdDetalleReserva, Fecha, Precio) VALUES (@IdUsuario, @IdDetalleReserva, @Fecha, @Precio)";
 
-                int idUsuario;
-                using (var command = new SqlCommand(queryIdUsuario, connection))
+                using (var command = new SqlCommand(query, connection))
                 {
-                    command.Parameters.AddWithValue("@IdUsuario", reserva.IdUsuario);
-                    var result = await command.ExecuteScalarAsync();
-                    idUsuario = result != null ? Convert.ToInt32(result) : 0; // si no es nulo, lo parsea a int, si es nulo, le asigna valor 0, esto hará q de error identificable en lugar de un valor nulo no esperado
-                }
-
-                // Calcular el PrecioTotal (sumando los precios de las lineas de la reserva)
-                decimal precioTotal = 0;
-                using (var command = new SqlCommand(queryPrecioTotal, connection))
-                {
-                    command.Parameters.AddWithValue("@IdReserva", reserva.IdReserva);
-                    var result = await command.ExecuteScalarAsync();
-                    precioTotal = result != null ? Convert.ToDecimal(result) : 0m; // si no es nulo, lo parsea a decimal, si es nulo, le asigna valor 0 (0m es el valor en decimal de 0)
-                }
-
-                // insert final en reservas con toda la info
-                string queryInsert = "INSERT INTO Reservas (IdUsuario, Fecha, Descripcion, PrecioTotal) VALUES (@IdUsuario, @Fecha, @Descripcion, @PrecioTotal)";
-                using (var command = new SqlCommand(queryInsert, connection))
-                {
-                    command.Parameters.AddWithValue("@IdUsuario", idUsuario); // idUsuario previo
+                    command.Parameters.AddWithValue("@IdUsuario", reserva.UsuarioId);
+                    command.Parameters.AddWithValue("@IdDetalleReserva", reserva.DetallesReservasId);
                     command.Parameters.AddWithValue("@Fecha", DateTime.Now);
-                    command.Parameters.AddWithValue("@Descripcion", reserva.Descripcion);
-                    command.Parameters.AddWithValue("@PrecioTotal", precioTotal);
+                    command.Parameters.AddWithValue("@Precio", reserva.PrecioTotal);
 
-                    await command.ExecuteNonQueryAsync();
+
                 }
+
+
             }
         }
+
+
 
         public async Task UpdateAsync(Reservas reserva)
         {

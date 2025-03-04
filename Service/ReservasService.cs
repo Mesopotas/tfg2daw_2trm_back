@@ -18,25 +18,25 @@ namespace CoWorking.Service
             _reservasRepository = reservasRepository;
         }
 
-        public async Task<List<Reservas>> GetAllAsync()
+        public async Task<List<ReservasDTO>> GetAllAsync()
         {
             return await _reservasRepository.GetAllAsync();
         }
 
-        public async Task<Reservas?> GetByIdAsync(int id)
+        public async Task<ReservasDTO> GetByIdAsync(int id)
         {
             return await _reservasRepository.GetByIdAsync(id);
         }
 
-        public async Task AddAsync(Reservas reserva)
+        public async Task AddAsync(ReservasDTO reserva)
         {
             await _reservasRepository.AddAsync(reserva);
         }
 
-        public async Task UpdateAsync(Reservas reserva)
+     /*   public async Task UpdateAsync(Reservas reserva)
         {
             await _reservasRepository.UpdateAsync(reserva);
-        }
+        }*/
 
         public async Task DeleteAsync(int id)
         {
