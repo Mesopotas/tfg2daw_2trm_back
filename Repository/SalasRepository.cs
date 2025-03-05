@@ -61,11 +61,7 @@ public async Task<List<SalasDTO>> GetAllAsync()
                     }
 
                     // Puestos de trabajo para esta sala
-                    string queryPuestosTrabajo = @"
-                        SELECT 
-                            IdPuestoTrabajo, URL_Imagen, CodigoMesa, Disponible, Bloqueado 
-                        FROM PuestosTrabajo 
-                        WHERE IdSala = @idSala";
+                    string queryPuestosTrabajo = "SELECT IdPuestoTrabajo, NumeroAsiento, CodigoMesa, URL_Imagen, Disponible, Bloqueado FROM PuestosTrabajo";
                     
                     using (var commandPuestoTrabajo = new SqlCommand(queryPuestosTrabajo, connection))
                     {
@@ -76,12 +72,13 @@ public async Task<List<SalasDTO>> GetAllAsync()
                             {
                                 var puesto = new PuestosTrabajoDTO
                                 {
-                                    IdPuestoTrabajo = readerPuestosTrabajos.GetInt32(0),
-                                    URL_Imagen = readerPuestosTrabajos.GetString(1),
-                                    CodigoMesa = readerPuestosTrabajos.GetInt32(2),
-                                    Disponible = readerPuestosTrabajos.GetBoolean(3),
-                                    Bloqueado = readerPuestosTrabajos.GetBoolean(4),
-                                    Disponibilidades = new List<DisponibilidadDTO>()
+                                IdPuestoTrabajo = readerPuestosTrabajos.GetInt32(0),
+                                NumeroAsiento = readerPuestosTrabajos.GetInt32(1),
+                                CodigoMesa = readerPuestosTrabajos.GetInt32(2),
+                                URL_Imagen = readerPuestosTrabajos.GetString(3),
+                                Disponible = readerPuestosTrabajos.GetBoolean(4),
+                                Bloqueado = readerPuestosTrabajos.GetBoolean(5),
+                                Disponibilidades = new List<DisponibilidadDTO>()
                                 };
                                 salaDto.Puestos.Add(puesto);
                             }
@@ -177,7 +174,7 @@ public async Task<SalasDTO> GetByIdAsync(int id)
             }
 
             // Puestos de trabajo para esta sala
-            string queryPuestosTrabajo = "SELECT IdPuestoTrabajo, URL_Imagen, CodigoMesa, Disponible, Bloqueado FROM PuestosTrabajo WHERE IdSala = @idSala";
+            string queryPuestosTrabajo = "SELECT IdPuestoTrabajo, NumeroAsiento, CodigoMesa, URL_Imagen, Disponible, Bloqueado FROM PuestosTrabajo WHERE IdSala = @idSala";
             using (var commandPuestoTrabajo = new SqlCommand(queryPuestosTrabajo, connection))
             {
                 commandPuestoTrabajo.Parameters.AddWithValue("@idSala", salaDto.IdSala);
@@ -188,10 +185,11 @@ public async Task<SalasDTO> GetByIdAsync(int id)
                         var puesto = new PuestosTrabajoDTO
                         {
                             IdPuestoTrabajo = readerPuestosTrabajos.GetInt32(0),
-                            URL_Imagen = readerPuestosTrabajos.GetString(1),
+                            NumeroAsiento = readerPuestosTrabajos.GetInt32(1),
                             CodigoMesa = readerPuestosTrabajos.GetInt32(2),
-                            Disponible = readerPuestosTrabajos.GetBoolean(3),
-                            Bloqueado = readerPuestosTrabajos.GetBoolean(4),
+                            URL_Imagen = readerPuestosTrabajos.GetString(3),
+                            Disponible = readerPuestosTrabajos.GetBoolean(4),
+                            Bloqueado = readerPuestosTrabajos.GetBoolean(5),
                             Disponibilidades = new List<DisponibilidadDTO>()
                         };
                         salaDto.Puestos.Add(puesto);
@@ -283,7 +281,7 @@ public async Task<List<SalasDTO>> GetByIdSedeAsync(int id)
                 }
             }
 
-            string queryPuestosTrabajo = "SELECT IdPuestoTrabajo, URL_Imagen, CodigoMesa, Disponible, Bloqueado FROM PuestosTrabajo WHERE IdSala = @idSala";
+            string queryPuestosTrabajo = "SELECT IdPuestoTrabajo, NumeroAsiento, CodigoMesa, URL_Imagen, Disponible, Bloqueado FROM PuestosTrabajo WHERE IdSala = @idSala";
             using (var commandPuestoTrabajo = new SqlCommand(queryPuestosTrabajo, connection))
             {
                 commandPuestoTrabajo.Parameters.AddWithValue("@idSala", salaDto.IdSala);
@@ -293,11 +291,12 @@ public async Task<List<SalasDTO>> GetByIdSedeAsync(int id)
                     {
                         var puesto = new PuestosTrabajoDTO
                         {
-                            IdPuestoTrabajo = readerPuestosTrabajos.GetInt32(0),
-                            URL_Imagen = readerPuestosTrabajos.GetString(1),
+                             IdPuestoTrabajo = readerPuestosTrabajos.GetInt32(0),
+                            NumeroAsiento = readerPuestosTrabajos.GetInt32(1),
                             CodigoMesa = readerPuestosTrabajos.GetInt32(2),
-                            Disponible = readerPuestosTrabajos.GetBoolean(3),
-                            Bloqueado = readerPuestosTrabajos.GetBoolean(4),
+                            URL_Imagen = readerPuestosTrabajos.GetString(3),
+                            Disponible = readerPuestosTrabajos.GetBoolean(4),
+                            Bloqueado = readerPuestosTrabajos.GetBoolean(5),
                             Disponibilidades = new List<DisponibilidadDTO>()
                         };
 
@@ -341,7 +340,7 @@ public async Task AddAsync(SalasDTO salaDto)
         int capacidadAsientos = 0;
 
         string queryTipoSala = @"
-        SELECT NumeroMesas, CapacidadAsientos FROM TiposSalas WHERE IdTipoSala = @IdTipoSala"; // obtener el numero de mesas y asientos x mesa para calcular la capacidad total para salas
+        SELECT NumeroMesas, CapacidadAsientos FROM TiposSalas WHERE IdTipoSala = @IdTipoSala";
 
         using (var command = new SqlCommand(queryTipoSala, connection))
         {
@@ -360,10 +359,8 @@ public async Task AddAsync(SalasDTO salaDto)
             }
         }
 
-        // Calcular la capacidad total
         int capacidadTotal = numeroMesas * capacidadAsientos;
 
-        // insert de la sala con la capacidad total asociada y los datos dados en el endpoint del post
         string insertSala = @"
         INSERT INTO Salas (Nombre, URL_Imagen, Capacidad, IdTipoSala, IdSede, Bloqueado) 
         VALUES (@Nombre, @URL_Imagen, @Capacidad, @IdTipoSala, @IdSede, @Bloqueado);
@@ -402,15 +399,17 @@ public async Task AddAsync(SalasDTO salaDto)
         {
                     // cada silla tendrá asociada una mesa a la que se asocie
             int codigoMesa = (i / capacidadAsientos) + 1; // al ser una operacion de enteros, no hay decimales, por tanto 3/4 = 0, 5/4 = 1 y asi con todos, pudiendo asi autonincrementar los valores
+            int numeroAsiento = i + 1; // desde 1 hasta el final, id secundario para facilitar el fetch
 
             string insertPuestoTrabajo = @"
-            INSERT INTO PuestosTrabajo (URL_Imagen, CodigoMesa, IdZonaTrabajo, IdSala, Bloqueado) 
-            VALUES (@URL_Imagen, @CodigoMesa, @IdZonaTrabajo, @IdSala, @Bloqueado);
+            INSERT INTO PuestosTrabajo (NumeroAsiento, URL_Imagen, CodigoMesa, IdZonaTrabajo, IdSala, Bloqueado) 
+            VALUES (@NumeroAsiento, @URL_Imagen, @CodigoMesa, @IdZonaTrabajo, @IdSala, @Bloqueado);
             SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
             int idPuestoTrabajo;
             using (var command = new SqlCommand(insertPuestoTrabajo, connection))
             {
+                command.Parameters.AddWithValue("@NumeroAsiento", numeroAsiento);
                 command.Parameters.AddWithValue("@URL_Imagen", "");
                 command.Parameters.AddWithValue("@CodigoMesa", codigoMesa);
                 command.Parameters.AddWithValue("@IdZonaTrabajo", idZonaTrabajo);
@@ -430,14 +429,14 @@ public async Task AddAsync(SalasDTO salaDto)
                 {
                     command.Parameters.AddWithValue("@Fecha", diasMes);
                     command.Parameters.AddWithValue("@Estado", true);
-                    command.Parameters.AddWithValue("@IdTramoHorario", 1); // habrá q cambiarlo, debe haber un tramo horario creado con id 1 sino dará conflicto de clave foranea
+                    command.Parameters.AddWithValue("@IdTramoHorario", 1);
                     command.Parameters.AddWithValue("@IdPuestoTrabajo", idPuestoTrabajo);
 
                     await command.ExecuteNonQueryAsync();
                 }
             }
         }
-        salaDto.Capacidad = capacidadTotal; // se actualiza el valor de la  variable del dto con la capacidad total calculada previamente
+        salaDto.Capacidad = capacidadTotal;
     }
 }
         public async Task DeleteAsync(int id)
