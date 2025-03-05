@@ -25,8 +25,9 @@ namespace Models
     public class PuestosTrabajoDTO
     {
         public int IdPuestoTrabajo { get; set; }
-        public string URL_Imagen { get; set; }
+        public int NumeroAsiento { get; set; }
         public int CodigoMesa { get; set; }
+        public string URL_Imagen { get; set; }
         public bool Disponible { get; set; }
         public bool Bloqueado { get; set; }
         public List<DisponibilidadDTO> Disponibilidades { get; set; } = new List<DisponibilidadDTO>();
