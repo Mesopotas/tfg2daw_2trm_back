@@ -24,7 +24,7 @@ namespace CoWorking.Repositories
             {
                 await connection.OpenAsync();
 
-                string query = "SELECT IdDisponibilidad, Fecha, Estado FROM Disponibilidades";
+                string query = "SELECT IdDisponibilidad, Fecha, Estado FROM Disponibilidades WHERE fecha >= DAY(GETDATE());";
                 using (var command = new SqlCommand(query, connection))
                 {
                     using (var reader = await command.ExecuteReaderAsync())
@@ -87,7 +87,7 @@ namespace CoWorking.Repositories
             using (var connection = new SqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
-                string query = "SELECT IdDisponibilidad, Fecha, Estado FROM Disponibilidades WHERE IdPuestoTrabajo = @Id;";
+                string query = "SELECT IdDisponibilidad, Fecha, Estado, IdTramoHorario FROM Disponibilidades WHERE IdPuestoTrabajo = @Id  AND fecha >= DAY(GETDATE());;";
                 using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@Id", id);
@@ -99,7 +99,8 @@ namespace CoWorking.Repositories
                             {
                                 IdDisponibilidad = reader.GetInt32(0),
                                 Fecha = reader.GetInt32(1),
-                                Estado = reader.GetBoolean(2)
+                                Estado = reader.GetBoolean(2),
+                                IdTramoHorario = reader.GetInt32(3)
                             };
 
                             disponibilidades.Add(disponibilidad);
