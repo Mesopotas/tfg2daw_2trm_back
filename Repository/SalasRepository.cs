@@ -13,15 +13,15 @@ namespace CoWorking.Repositories
             _connectionString = connectionString;
         }
 
-public async Task<List<Salas>> GetAllAsync()
+public async Task<List<SalasDetallesDTO>> GetAllAsync()
 {
-    var salas = new List<Salas>();
+    var salas = new List<SalasDetallesDTO>();
 
     using (var connection = new SqlConnection(_connectionString))
     {
         await connection.OpenAsync();
         
-        string query = "SELECT IdSala, Nombre, URL_Imagen, Capacidad, IdTipoSala, IdSede, Bloqueado FROM Salas;";
+        string query = "SELECT IdSala FROM Salas;";
 
         using (var command = new SqlCommand(query, connection))
         {
@@ -29,15 +29,9 @@ public async Task<List<Salas>> GetAllAsync()
             {
                 while (await reader.ReadAsync())
                 {
-                    var sala = new Salas
+                    var sala = new SalasDetallesDTO
                     {
                         IdSala = reader.GetInt32(0),
-                        Nombre = reader.GetString(1),
-                        URL_Imagen = reader.GetString(2),
-                        Capacidad = reader.GetInt32(3),
-                        IdTipoSala = reader.GetInt32(4),
-                        IdSede = reader.GetInt32(5),
-                        Bloqueado = reader.GetBoolean(6),
                         Zona = new List<ZonasTrabajo>(),
                         Puestos = new List<PuestosTrabajo>()
                     };
@@ -119,15 +113,15 @@ public async Task<List<Salas>> GetAllAsync()
 
     return salas;
 }
-public async Task<Salas> GetByIdAsync(int id)
+public async Task<SalasDetallesDTO> GetByIdAsync(int id)
 {
-    Salas sala = null;
+    SalasDetallesDTO sala = null;
 
     using (var connection = new SqlConnection(_connectionString))
     {
         await connection.OpenAsync();
         string query = @"
-        SELECT IdSala, Nombre, URL_Imagen, Capacidad, IdTipoSala, IdSede, Bloqueado FROM Salas WHERE IdSala = @IdSala";
+        SELECT IdSala FROM Salas WHERE IdSala = @IdSala";
 
         using (var command = new SqlCommand(query, connection))
         {
@@ -136,15 +130,9 @@ public async Task<Salas> GetByIdAsync(int id)
             {
                 if (await reader.ReadAsync())
                 {
-                    sala = new Salas
+                    sala = new SalasDetallesDTO
                     {
                         IdSala = reader.GetInt32(0),
-                        Nombre = reader.GetString(1),
-                        URL_Imagen = reader.GetString(2),
-                        Capacidad = reader.GetInt32(3),
-                        IdTipoSala = reader.GetInt32(4),
-                        IdSede = reader.GetInt32(5),
-                        Bloqueado = reader.GetBoolean(6),
                         Zona = new List<ZonasTrabajo>(),
                         Puestos = new List<PuestosTrabajo>()
                     };

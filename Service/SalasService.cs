@@ -18,12 +18,12 @@ namespace CoWorking.Service
             _salasRepository = salasRepository;
         }
 
-        public async Task<List<Salas>> GetAllAsync()
+        public async Task<List<SalasDetallesDTO>> GetAllAsync()
         {
             return await _salasRepository.GetAllAsync();
         }
 
-        public async Task<Salas> GetByIdAsync(int id)
+        public async Task<SalasDetallesDTO> GetByIdAsync(int id)
         {
             return await _salasRepository.GetByIdAsync(id);
         }
