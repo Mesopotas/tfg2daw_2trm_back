@@ -51,7 +51,7 @@ public async Task<ActionResult<List<SalasDTO>>> GetSalaBySede([FromQuery] int id
     return Ok(salas);
 }
         [HttpPost]
-        public async Task<ActionResult<Salas>> CreateSala(SalasDTO salas)
+        public async Task<ActionResult<Salas>> CreateSala(Salas salas)
         {
             await _serviceSalas.AddAsync(salas);
             return CreatedAtAction(nameof(CreateSala), new { id = salas.IdSala }, salas);

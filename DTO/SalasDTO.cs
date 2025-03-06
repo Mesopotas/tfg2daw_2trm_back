@@ -9,11 +9,9 @@ namespace Models
         public string URL_Imagen { get; set; }
         public int Capacidad { get; set; }
         public int IdTipoSala { get; set; }
-
         public int IdSede { get; set; }
         public bool Bloqueado { get; set; }
-        public List<ZonasTrabajoDTO> Zona { get; set; } = new List<ZonasTrabajoDTO>();
-        public List<PuestosTrabajoDTO> Puestos { get; set; } = new List<PuestosTrabajoDTO>();
+        // no es necesario cargar los todos los asientos ni las zonas en algunos endpoints que lo haran mas lento
     }
 
     public class ZonasTrabajoDTO

@@ -5,10 +5,10 @@ namespace CoWorking.Repositories
 {
     public interface ISalasRepository
     {
-        Task<List<SalasDTO>> GetAllAsync();
-        Task<SalasDTO> GetByIdAsync(int id);
+        Task<List<Salas>> GetAllAsync();
+        Task<Salas> GetByIdAsync(int id);
         Task<List<SalasDTO>> GetByIdSedeAsync(int id);
-        Task AddAsync(SalasDTO salasDTO);
+        Task AddAsync(Salas salas);
       //  Task UpdateAsync(Salas salas);
         Task DeleteAsync(int id);
 
