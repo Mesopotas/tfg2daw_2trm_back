@@ -80,5 +80,20 @@ namespace CoWorking.Service
 
             return Task.FromResult(esElUsuario || esAdmin);
         }
+            public async Task<bool> ChangePasswordAsync(ChangePasswordDTO changePasswordDTO, ClaimsPrincipal user)
+    {
+        // Obtener el ID del usuario en base a su JWT
+        var idUsuarioClaim = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+        if (idUsuarioClaim == null || !int.TryParse(idUsuarioClaim.Value, out int idUsuario)) // si es null o no lo puede parsear al valor de su id (osea el jwt no esta bien formado), retornará false
+        {
+            return false;
+        }
+
+        bool tieneAcceso = await HasAccessToResource(changePasswordDTO.IdUsuario, user); // llamamos a funcion para validar si es el propio usuario o si es un admin, sino no dejará
+        if (!tieneAcceso) return false;
+
+        return await _repository.ChangePasswordAsync(changePasswordDTO);
+    }
+
     }
 }

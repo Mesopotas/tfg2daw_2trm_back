@@ -290,5 +290,37 @@ namespace CoWorking.Repositories
                 }
             }
         }
+        public async Task<bool> ChangePasswordAsync(ChangePasswordDTO changePasswordDTO)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+
+                // contraseña antigua comparativa
+                string comprobarContraseniaActual = "SELECT Contrasenia FROM Usuarios WHERE IdUsuario = @IdUsuario";
+                using (var command = new SqlCommand(comprobarContraseniaActual, connection))
+                {
+                    command.Parameters.AddWithValue("@IdUsuario", changePasswordDTO.IdUsuario);
+                    var contraseniaActual = (string)await command.ExecuteScalarAsync();
+
+                    if (contraseniaActual == null || contraseniaActual != changePasswordDTO.OldPassword) // si es null o no coincide con la actual, dará error
+                    {
+                        throw new HttpRequestException("La contraseña actual es incorrecta.");
+                    }
+                }
+
+                // Actualizar la contraseña
+                string updateContrasenia = "UPDATE Usuarios SET Contrasenia = @NewPassword WHERE IdUsuario = @IdUsuario";
+                using (var command = new SqlCommand(updateContrasenia, connection))
+                {
+                    command.Parameters.AddWithValue("@NewPassword", changePasswordDTO.NewPassword);
+                    command.Parameters.AddWithValue("@IdUsuario", changePasswordDTO.IdUsuario);
+
+                    int rowsAffected = await command.ExecuteNonQueryAsync();
+                    return rowsAffected > 0;
+                }
+            }
+        }
+
     }
 }
