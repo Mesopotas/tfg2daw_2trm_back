@@ -40,9 +40,9 @@ namespace CoWorking.Controllers
 
 
         [HttpPost]
-        public async Task<ActionResult<ReservasDTO>> CreateReserva(ReservasDTO reservas)
+        public async Task<ActionResult<ReservasDTO>> CreateReserva(Reservas reservas)
         {
-            await _serviceReservas.AddAsync(reservas);
+            await _serviceReservas.CreateReservaAsync(reservas);
             return CreatedAtAction(nameof(CreateReserva), new { id = reservas.IdReserva }, reservas);
         }
 

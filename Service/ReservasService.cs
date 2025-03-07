@@ -28,9 +28,9 @@ namespace CoWorking.Service
             return await _reservasRepository.GetByIdAsync(id);
         }
 
-        public async Task AddAsync(ReservasDTO reserva)
+        public async Task CreateReservaAsync(Reservas reserva)
         {
-            await _reservasRepository.AddAsync(reserva);
+            await _reservasRepository.CreateReservaAsync(reserva);
         }
 
      /*   public async Task UpdateAsync(Reservas reserva)

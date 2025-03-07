@@ -130,46 +130,62 @@ namespace CoWorking.Repositories
             return reserva;
         }
 
-        public async Task AddAsync(ReservasDTO reserva)
+public async Task CreateReservaAsync(Reservas reserva)
+{
+    using (var connection = new SqlConnection(_connectionString))
+    {
+        await connection.OpenAsync();
+        
+        // Obtener el precio del asiento con inner joins
+        string queryPrecio = @"
+            SELECT TPT.Precio
+            FROM PuestosTrabajo PT
+            INNER JOIN ZonasTrabajo ZT ON PT.IdZonaTrabajo = ZT.IdZonaTrabajo
+            INNER JOIN Salas S ON ZT.IdSala = S.IdSala
+            INNER JOIN TiposSalas TS ON S.IdTipoSala = TS.IdTipoSala
+            INNER JOIN TiposPuestosTrabajo TPT ON TS.IdTipoPuestoTrabajo = TPT.IdTipoPuestoTrabajo
+            WHERE PT.IdPuestoTrabajo = @IdPuestoTrabajo;";
+        
+        decimal precio = 0;
+        
+        using (var command = new SqlCommand(queryPrecio, connection))
         {
-            using (var connection = new SqlConnection(_connectionString))
+            command.Parameters.AddWithValue("@IdPuestoTrabajo", reserva.IdPuestoTrabajo);
+            var result = await command.ExecuteScalarAsync();
+            
+            if (result != null && result != DBNull.Value)
             {
-                await connection.OpenAsync();
-
-                // insert reserva, le procederá un insert en detalles reserva, y le seguirá un insert en Linea en el fronend con stores de pinia
-                string query = "INSERT INTO Reservas (IdUsuario, IdDetalleReserva, Fecha, Precio) VALUES (@IdUsuario, @IdDetalleReserva, @Fecha, @Precio)";
-
-                using (var command = new SqlCommand(query, connection))
-                {
-                    command.Parameters.AddWithValue("@IdUsuario", reserva.UsuarioId);
-                    command.Parameters.AddWithValue("@IdDetalleReserva", reserva.DetallesReservasId);
-                    command.Parameters.AddWithValue("@Fecha", DateTime.Now);
-                    command.Parameters.AddWithValue("@Precio", reserva.PrecioTotal);
-
-
-                }
-
-
+                precio = Convert.ToDecimal(result);
+                Console.WriteLine($"Precio encontrado para puesto {reserva.IdPuestoTrabajo}: {precio}");
+            }
+            else
+            {
+                throw new Exception($"No se encontró el precio para el puesto de trabajo ID: {reserva.IdPuestoTrabajo}");
             }
         }
-
-
-
-        public async Task UpdateAsync(Reservas reserva)
+        
+        // Insertar la nueva reserva
+        string queryInsert = @"
+            INSERT INTO Reservas (IdUsuario, Fecha, Descripcion, PrecioTotal)
+            VALUES (@IdUsuario, @Fecha, @Descripcion, @PrecioTotal);
+            SELECT SCOPE_IDENTITY();";
+        
+        using (var command = new SqlCommand(queryInsert, connection))
         {
-            using (var connection = new SqlConnection(_connectionString))
+            command.Parameters.AddWithValue("@IdUsuario", reserva.IdUsuario);
+            command.Parameters.AddWithValue("@Fecha", reserva.Fecha);
+            command.Parameters.AddWithValue("@Descripcion", reserva.Descripcion);
+            command.Parameters.AddWithValue("@PrecioTotal", precio);
+            
+            // Get the ID of the newly created reservation
+            var newReservaId = await command.ExecuteScalarAsync();
+            if (newReservaId != null && newReservaId != DBNull.Value)
             {
-                await connection.OpenAsync();
-
-                string query = "UPDATE Reservas SET Descripcion = @Descripcion WHERE IdReserva = @IdReserva";
-
-                using (var command = new SqlCommand(query, connection))
-                {
-                    command.Parameters.AddWithValue("@Descripcion", reserva.Descripcion);
-                    await command.ExecuteNonQueryAsync();
-                }
+                reserva.IdReserva = Convert.ToInt32(newReservaId);
             }
         }
+    }
+}
 
         public async Task DeleteAsync(int id)
         {
