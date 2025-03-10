@@ -10,5 +10,8 @@ namespace CoWorking.Service
         Task CreateReservaAsync(Reservas reserva);
       //  Task UpdateAsync(Reservas reserva);
         Task DeleteAsync(int id);
+    Task<ReservasClienteInfoDTO> GetDetallesPedido(int idReserva, int idDetalleReserva);
+
+
     }
 }

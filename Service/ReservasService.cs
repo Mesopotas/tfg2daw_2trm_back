@@ -48,6 +48,11 @@ namespace CoWorking.Service
            await _reservasRepository.DeleteAsync(id);
            //return NoContent();
         }
+        public async Task<ReservasClienteInfoDTO> GetDetallesPedido(int idReserva, int idDetalleReserva)
+{
+    return await _reservasRepository.GetDetallesPedidoAsync(idReserva, idDetalleReserva);
+}
+
 
 
                 }

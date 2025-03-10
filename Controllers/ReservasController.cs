@@ -73,6 +73,16 @@ namespace CoWorking.Controllers
             await _serviceReservas.DeleteAsync(id);
             return NoContent();
         }
+[HttpGet("detalles/{idReserva}/{idDetalleReserva}")]
+public async Task<ActionResult<ReservasClienteInfoDTO>> GetDetallesPedido(int idReserva, int idDetalleReserva)
+{
+    var reservaDetalles = await _serviceReservas.GetDetallesPedido(idReserva, idDetalleReserva);
+    if (reservaDetalles == null)
+    {
+        return NotFound();
+    }
+    return Ok(reservaDetalles);
+}
 
     }
 }
