@@ -75,23 +75,37 @@ namespace CoWorking.Repositories
             return linea;
         }
 
-        public async Task AddAsync(Lineas linea)
+public async Task AddAsync(Lineas linea)
+{
+    using (var connection = new SqlConnection(_connectionString))
+    {
+        await connection.OpenAsync();
+
+        string queryGetPrecio = "SELECT PrecioTotal FROM Reservas WHERE IdReserva = @IdReserva"; // obtener y asignar el precio automaticamente
+        using (var commandGet = new SqlCommand(queryGetPrecio, connection))
         {
-            using (var connection = new SqlConnection(_connectionString))
+            commandGet.Parameters.AddWithValue("@IdReserva", linea.IdReserva);
+            object result = await commandGet.ExecuteScalarAsync();
+            if (result != null && result != DBNull.Value)
             {
-                await connection.OpenAsync();
-
-                string queryInsert = "INSERT INTO Lineas (IdReserva, IdDetalleReserva, Precio) VALUES (@IdReserva, @IdDetalleReserva, @Precio)";
-                using (var command = new SqlCommand(queryInsert, connection))
-                {
-                    command.Parameters.AddWithValue("@IdReserva", linea.IdReserva);
-                    command.Parameters.AddWithValue("@IdDetalleReserva", linea.IdDetalleReserva);
-                    command.Parameters.AddWithValue("@Precio", linea.Precio); // CORREGIDO
-
-                    await command.ExecuteNonQueryAsync();
-                }
+                linea.Precio = Convert.ToDouble(result);
             }
         }
+
+        // insert con el precio obtenido una vez le asigne id de reserva
+        string queryInsert = "INSERT INTO Lineas (IdReserva, IdDetalleReserva, Precio) VALUES (@IdReserva, @IdDetalleReserva, @Precio)";
+        using (var commandInsert = new SqlCommand(queryInsert, connection))
+        {
+            commandInsert.Parameters.AddWithValue("@IdReserva", linea.IdReserva);
+            commandInsert.Parameters.AddWithValue("@IdDetalleReserva", linea.IdDetalleReserva);
+            commandInsert.Parameters.AddWithValue("@Precio", linea.Precio);
+
+            await commandInsert.ExecuteNonQueryAsync();
+        }
+    }
+}
+
+
 
         public async Task DeleteAsync(int id)
         {
