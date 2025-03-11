@@ -76,22 +76,29 @@ namespace CoWorking.Repositories
             return detallesReserva;
         }
 
-        public async Task AddAsync(DetallesReservas detallesReserva)
+public async Task AddAsync(DetallesReservas detallesReserva)
+{
+    using (var connection = new SqlConnection(_connectionString))
+    {
+        await connection.OpenAsync();
+
+        string query = "INSERT INTO DetallesReservas (Descripcion, IdPuestoTrabajo) VALUES (@Descripcion, @IdPuestoTrabajo); SELECT SCOPE_IDENTITY();";
+
+        using (var command = new SqlCommand(query, connection))
         {
-            using (var connection = new SqlConnection(_connectionString))
+            command.Parameters.AddWithValue("@Descripcion", detallesReserva.Descripcion);
+            command.Parameters.AddWithValue("@IdPuestoTrabajo", detallesReserva.IdPuestoTrabajo);
+            
+            // Obtain SCOPE_IDENTITY() value (last inserted ID)
+            var newDetalleReservaId = await command.ExecuteScalarAsync();
+            if (newDetalleReservaId != null && newDetalleReservaId != DBNull.Value)
             {
-                await connection.OpenAsync();
-
-                string query = "INSERT INTO DetallesReservas (Descripcion, IdPuestoTrabajo) VALUES (@Descripcion, @IdPuestoTrabajo)";
-
-                using (var command = new SqlCommand(query, connection))
-                {
-                    command.Parameters.AddWithValue("@Descripcion", detallesReserva.Descripcion);
-                    command.Parameters.AddWithValue("@IdPuestoTrabajo", detallesReserva.IdPuestoTrabajo);
-                    await command.ExecuteNonQueryAsync();
-                }
+                detallesReserva.IdDetalleReserva = Convert.ToInt32(newDetalleReservaId);
             }
         }
+        // Connection will be automatically closed here due to the using statement
+    }
+}
 
         public async Task UpdateAsync(DetallesReservas detallesReserva)
         {
@@ -110,7 +117,30 @@ namespace CoWorking.Repositories
                 }
             }
         }
+        public async Task<int?> GetLastIdAsync()
+        {
+            int? lastId = null;
 
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+
+                // Consulta para obtener el último IdDetalleReserva insertado
+                string query = "SELECT MAX(IdDetalleReserva) FROM DetallesReservas";
+
+                using (var command = new SqlCommand(query, connection))
+                {
+                    var result = await command.ExecuteScalarAsync();
+
+                    if (result != DBNull.Value)
+                    {
+                        lastId = Convert.ToInt32(result);
+                    }
+                }
+            }
+
+            return lastId;
+        }
         public async Task DeleteAsync(int id)
         {
             using (var connection = new SqlConnection(_connectionString))

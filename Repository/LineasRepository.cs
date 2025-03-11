@@ -66,9 +66,8 @@ namespace CoWorking.Repositories
                                 IdLinea = reader.GetInt32(0),
                                 IdReserva = reader.GetInt32(1),
                                 IdDetalleReserva = reader.GetInt32(2),
-                                Precio = (double)reader.GetDecimal(3)                                
+                                Precio = (double)reader.GetDecimal(3)
                             };
-
                         }
                     }
                 }
@@ -82,68 +81,18 @@ namespace CoWorking.Repositories
             {
                 await connection.OpenAsync();
 
-                await connection.OpenAsync();
-
-                // Consultas SQL para poder conseguir los ids
-                string queryIdPuestoTrabajo = "SELECT IdPuestoTrabajo FROM DetallesReservas WHERE IdDetalleReserva = @IdDetalleReserva";
-                string queryIdSala = "SELECT IdSala FROM PuestosTrabajo WHERE IdPuestoTrabajo = @IdPuestosTrabajoQuery";
-                string queryIdTipoSala = "SELECT IdTipoSala FROM Salas WHERE IdSala = @IdSalaQuery";
-                string queryIdTipoPuestoTrabajo = "SELECT IdTipoPuestoTrabajo FROM TiposSalas WHERE IdTipoSala = @IdTipoSalaQuery";
-                string queryPrecio = "SELECT Precio FROM TiposPuestosTrabajo WHERE IdTipoPuestoTrabajo = @queryIdTipoPuestoTrabajoQuery";
-
-                // Obtener valores de la base de datos
-                int idPuestoTrabajo;
-                using (var command = new SqlCommand(queryIdPuestoTrabajo, connection))
-                {
-                    command.Parameters.AddWithValue("@IdDetalleReserva", linea.IdDetalleReserva);
-                    var result = await command.ExecuteScalarAsync();
-                    idPuestoTrabajo = result != null ? Convert.ToInt32(result) : 0;
-                }
-
-                int idSala;
-                using (var command = new SqlCommand(queryIdSala, connection))
-                {
-                    command.Parameters.AddWithValue("@IdPuestosTrabajoQuery", idPuestoTrabajo);
-                    var result = await command.ExecuteScalarAsync();
-                    idSala = result != null ? Convert.ToInt32(result) : 0;
-                }
-
-                int idTipoSala;
-                using (var command = new SqlCommand(queryIdTipoSala, connection))
-                {
-                    command.Parameters.AddWithValue("@IdSalaQuery", idSala);
-                    var result = await command.ExecuteScalarAsync();
-                    idTipoSala = result != null ? Convert.ToInt32(result) : 0;
-                }
-
-                int idTipoPuestoTrabajo;
-                using (var command = new SqlCommand(queryIdTipoPuestoTrabajo, connection))
-                {
-                    command.Parameters.AddWithValue("@IdTipoSalaQuery", idTipoSala);
-                    var result = await command.ExecuteScalarAsync();
-                    idTipoPuestoTrabajo = result != null ? Convert.ToInt32(result) : 0;
-                }
-
-                decimal precio;
-                using (var command = new SqlCommand(queryPrecio, connection))
-                {
-                    command.Parameters.AddWithValue("@queryIdTipoPuestoTrabajoQuery", idTipoPuestoTrabajo);
-                    var result = await command.ExecuteScalarAsync();
-                    precio = result != null ? Convert.ToDecimal(result) : 0m;
-                }
-
-                // Insertar en la tabla Lineas con los valores obtenidos
                 string queryInsert = "INSERT INTO Lineas (IdReserva, IdDetalleReserva, Precio) VALUES (@IdReserva, @IdDetalleReserva, @Precio)";
                 using (var command = new SqlCommand(queryInsert, connection))
                 {
                     command.Parameters.AddWithValue("@IdReserva", linea.IdReserva);
                     command.Parameters.AddWithValue("@IdDetalleReserva", linea.IdDetalleReserva);
-                    command.Parameters.AddWithValue("@Precio", precio);
+                    command.Parameters.AddWithValue("@Precio", linea.Precio); // CORREGIDO
 
                     await command.ExecuteNonQueryAsync();
                 }
             }
         }
+
         public async Task DeleteAsync(int id)
         {
             using (var connection = new SqlConnection(_connectionString))

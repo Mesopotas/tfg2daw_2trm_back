@@ -37,7 +37,16 @@ namespace CoWorking.Controllers
             }
             return Ok(detalleReservas);
         }
-
+    [HttpGet("last")]
+            public async Task<ActionResult<int?>> GetLastIdDetallesReserva()
+            {
+                var lastId = await _serviceDetallesReservas.GetLastIdAsync();
+                if (lastId == null)
+                {
+                    return NotFound("No hay registros disponibles.");
+                }
+                return Ok(lastId);
+            }
 
         [HttpPost]
         public async Task<ActionResult<DetallesReservas>> CreateDetallesReserva(DetallesReservas detallesReservas)
