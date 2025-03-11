@@ -27,6 +27,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+// autorizacion para que solo si el token tiene el claim Admin pueda efectuar la accion (revisar la data del token jwt.io)
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
+});
+
 // Configuración de servicios
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUsuariosRepository, UsuariosRepository>(provider =>

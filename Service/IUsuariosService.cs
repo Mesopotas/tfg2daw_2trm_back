@@ -13,6 +13,6 @@ namespace CoWorking.Service
         Task DeleteAsync(int id);
         Task<List<UsuarioClienteDTO>> GetClientesByEmailAsync(string email);
         Task<Usuarios?> GetUsuarioFromJwtAsync(ClaimsPrincipal user);
-
+        Task<bool> ChangeUserRoleAsync(string email);
     }
 }

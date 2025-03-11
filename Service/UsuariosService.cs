@@ -67,5 +67,9 @@ namespace CoWorking.Service
             
             return await _usuariosRepository.GetByIdAsync(idUsuario); // obtener el usuario del id del claim
         }
+           public async Task<bool> ChangeUserRoleAsync(string email)
+        {
+            return await _usuariosRepository.ChangeUserRoleAsync(email);
+        }
     }
 }

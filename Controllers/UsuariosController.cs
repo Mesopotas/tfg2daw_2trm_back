@@ -3,6 +3,8 @@ using CoWorking.Repositories;
 using CoWorking.Service;
 using CoWorking.DTO;
 using Models;
+using Microsoft.AspNetCore.Authorization;
+
 
 namespace CoWorking.Controllers
 {
@@ -103,6 +105,19 @@ namespace CoWorking.Controllers
             }
 
             return Ok(usuario);
+        }
+        [Authorize(Roles = "Admin")]
+            [HttpPost("cambiar-rol")]
+        public async Task<IActionResult> ChangeUserRole( string email)
+        {
+            var result = await _serviceUsuarios.ChangeUserRoleAsync(email);
+
+            if (!result)
+            {
+                return NotFound("Usuario no encontrado.");
+            }
+
+            return Ok("Rol del usuario cambiado correctamente.");
         }
     
     }

@@ -322,5 +322,41 @@ namespace CoWorking.Repositories
             }
         }
 
+        public async Task<bool> ChangeUserRoleAsync(string email)
+{
+    using (var connection = new SqlConnection(_connectionString))
+    {
+        await connection.OpenAsync();
+
+        // Verificar si el usuario existe y tiene el rol de id 2
+        string checkRoleQuery = "SELECT IdRol FROM Usuarios WHERE Email = @Email";
+        using (var command = new SqlCommand(checkRoleQuery, connection))
+        {
+            command.Parameters.AddWithValue("@Email", email.ToLower());
+
+            var rol = await command.ExecuteScalarAsync();
+            if (rol == null) // si no encuentra id rol es que no existe usuario con ese email registrado
+            {
+                throw new HttpRequestException("Usuario no encontrado.");
+            }
+
+            if ((int)rol != 2) // si no es 2, solo puede ser rol 1 osea ya es admin
+            {
+                throw new HttpRequestException("El usuario no tiene el rol de cliente (IdRol = 2).");
+            }
+        }
+
+        string updateRoleQuery = "UPDATE Usuarios SET IdRol = 1 WHERE Email = @Email"; // id rol de 1 será el de admin
+        using (var command = new SqlCommand(updateRoleQuery, connection))
+        {
+            command.Parameters.AddWithValue("@Email", email.ToLower());
+
+            int rowsAffected = await command.ExecuteNonQueryAsync();
+            return rowsAffected > 0;
+        }
+    }
+}
+
+
     }
 }
