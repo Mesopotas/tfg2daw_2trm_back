@@ -119,6 +119,18 @@ namespace CoWorking.Controllers
 
             return Ok("Rol del usuario cambiado correctamente.");
         }
-    
+      [Authorize(Roles = "Admin")]
+            [HttpPost("quitar-admin")]
+            
+        public async Task<IActionResult> QuitarAdminAsync( string email)
+        {
+            var result = await _serviceUsuarios.QuitarAdminAsync(email);
+            if (!result)
+            {
+                return NotFound("Usuario no encontrado.");
+            }
+
+            return Ok("Rol del usuario cambiado correctamente.");
+        }
     }
 }

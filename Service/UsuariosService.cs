@@ -71,5 +71,8 @@ namespace CoWorking.Service
         {
             return await _usuariosRepository.ChangeUserRoleAsync(email);
         }
+              public async  Task<bool> QuitarAdminAsync(string email)        {
+            return await _usuariosRepository.QuitarAdminAsync(email);
+        }
     }
 }
