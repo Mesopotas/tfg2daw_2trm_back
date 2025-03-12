@@ -72,38 +72,12 @@ public async Task<List<SalasDetallesDTO>> GetAllAsync()
                                 URL_Imagen = readerPuestosTrabajos.GetString(3),
                                 Disponible = readerPuestosTrabajos.GetBoolean(4),
                                 Bloqueado = readerPuestosTrabajos.GetBoolean(5),
-                                Disponibilidades = new List<Disponibilidad>()
                                 };
                                 sala.Puestos.Add(puesto);
                             }
                         }
                     }
 
-                    // Agregar Disponibilidades para cada PuestoTrabajo de la sala
-                    foreach (var puesto in sala.Puestos)
-                    {
-                        string queryDisponibilidades = @"
-                            SELECT IdDisponibilidad, Fecha, Estado, IdTramoHorario 
-                            FROM Disponibilidades 
-                            WHERE IdPuestoTrabajo = @idPuestoTrabajo";
-                        using (var commandDisponibilidad = new SqlCommand(queryDisponibilidades, connection))
-                        {
-                            commandDisponibilidad.Parameters.AddWithValue("@idPuestoTrabajo", puesto.IdPuestoTrabajo);
-                            using (var readerDisponibilidades = await commandDisponibilidad.ExecuteReaderAsync())
-                            {
-                                while (await readerDisponibilidades.ReadAsync())
-                                {
-                                    puesto.Disponibilidades.Add(new Disponibilidad
-                                    {
-                                        IdDisponibilidad = readerDisponibilidades.GetInt32(0),
-                                        Fecha = readerDisponibilidades.GetInt32(1),
-                                        Estado = readerDisponibilidades.GetBoolean(2),
-                                        IdTramoHorario = readerDisponibilidades.GetInt32(3)
-                                    });
-                                }
-                            }
-                        }
-                    }
 
                     salas.Add(sala);
                 }
@@ -178,35 +152,12 @@ public async Task<SalasDetallesDTO> GetByIdAsync(int id)
                             URL_Imagen = readerPuestosTrabajos.GetString(3),
                             Disponible = readerPuestosTrabajos.GetBoolean(4),
                             Bloqueado = readerPuestosTrabajos.GetBoolean(5),
-                            Disponibilidades = new List<Disponibilidad>()
                         };
                         sala.Puestos.Add(puesto);
                     }
                 }
             }
 
-            // Agregar Disponibilidades para cada PuestoTrabajo
-            foreach (var puesto in sala.Puestos)
-            {
-                string queryDisponibilidades = "SELECT IdDisponibilidad, Fecha, Estado, IdTramoHorario FROM Disponibilidades WHERE IdPuestoTrabajo = @idPuestoTrabajo";
-                using (var commandDisponibilidad = new SqlCommand(queryDisponibilidades, connection))
-                {
-                    commandDisponibilidad.Parameters.AddWithValue("@idPuestoTrabajo", puesto.IdPuestoTrabajo);
-                    using (var readerDisponibilidades = await commandDisponibilidad.ExecuteReaderAsync())
-                    {
-                        while (await readerDisponibilidades.ReadAsync())
-                        {
-                            puesto.Disponibilidades.Add(new Disponibilidad
-                            {
-                                IdDisponibilidad = readerDisponibilidades.GetInt32(0),
-                                Fecha = readerDisponibilidades.GetInt32(1),
-                                Estado = readerDisponibilidades.GetBoolean(2),
-                                IdTramoHorario = readerDisponibilidades.GetInt32(3)
-                            });
-                        }
-                    }
-                }
-            }
         }
     }
 

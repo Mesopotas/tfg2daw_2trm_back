@@ -8,7 +8,6 @@ public class PuestosTrabajo
         public string URL_Imagen { get; set; }
         public bool Disponible { get; set; }
         public bool Bloqueado { get; set; }
-        public List<Disponibilidad> Disponibilidades { get; set; }
     public PuestosTrabajo() { }
 
     public PuestosTrabajo(int idPuestoTrabajo, int numeroAsiento, int codigoMesa, string urlImagen, bool disponible, bool bloqueado)
