@@ -62,7 +62,9 @@ builder.Services.AddScoped<IReservasRepository, ReservasRepository>(provider =>
 builder.Services.AddScoped<ILineasRepository, LineasRepository>(provider =>
     new LineasRepository(connectionString));        
 builder.Services.AddScoped<IDisponibilidadesRepository, DisponibilidadesRepository>(provider =>
-    new DisponibilidadesRepository(connectionString)); 
+    new DisponibilidadesRepository(connectionString));
+builder.Services.AddScoped<IOpinionesAsientosRepository, OpinionesAsientosRepository>(provider =>
+    new OpinionesAsientosRepository(connectionString)); 
 
 // Add services
 builder.Services.AddScoped<IUsuariosService, UsuariosService>();
@@ -75,6 +77,7 @@ builder.Services.AddScoped<IDetallesReservasService, DetallesReservasService>();
 builder.Services.AddScoped<IReservasService, ReservasService>();
 builder.Services.AddScoped<ILineasService, LineasService>();
 builder.Services.AddScoped<IDisponibilidadesService, DisponibilidadesService>();
+builder.Services.AddScoped<IOpinionesAsientosService, OpinionesAsientosService>();
 
 
 // Configuración de controladores
