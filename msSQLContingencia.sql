@@ -143,10 +143,12 @@ CREATE TABLE Usuarios ( -- personas registradas en la plataforma
 CREATE TABLE Reservas ( -- reservas realizadas por los usuarios
     IdReserva INT IDENTITY(1,1) PRIMARY KEY,
     IdUsuario INT,
+    IdDisponibilidad INT,
     Fecha DATETIME,
     Descripcion VARCHAR(250),
     PrecioTotal DECIMAL(10,2),
-    FOREIGN KEY (IdUsuario) REFERENCES Usuarios(IdUsuario)
+    FOREIGN KEY (IdUsuario) REFERENCES Usuarios(IdUsuario),
+    FOREIGN KEY (IdDisponibilidad) REFERENCES Disponibilidades(IdDisponibilidad)
 );
 
 CREATE TABLE Lineas ( -- reserva relacionada con sus detalles especificos, aquello que veria el usuario a modo factura
@@ -158,6 +160,28 @@ CREATE TABLE Lineas ( -- reserva relacionada con sus detalles especificos, aquel
     FOREIGN KEY (IdDetalleReserva) REFERENCES DetallesReservas(IdDetalleReserva)
 );
 
+CREATE TABLE Favoritos (
+    IdFavorito INT IDENTITY(1,1) PRIMARY KEY,
+    IdUsuario INT,
+    IdSala INT
+);
+
+INSERT INTO Sedes (Pais, Ciudad, Direccion, CodigoPostal, Planta, URL_Imagen, Observaciones)
+VALUES 
+('España', 'Madrid Centro', 'Gran via', '28013', 'Planta 3', 'A', 'Centro'),
+('España', 'Madrid afueras', 'afueras madrid', '28013', 'Planta 6', 'A', 'afueras');
+
+
+
+INSERT INTO Usuarios (Nombre, Apellidos, Email, Contrasenia, IdRol)
+VALUES 
+('Jorge', 'Blasco', 'jorge@gmail.com', '1234567890', 1),
+('AA', 'AA', 'aa@gmail.com', '1234567890', 2),
+('NN', 'BB', 'bb@gmail.com', '1234567890', 2);
+
+
+INSERT INTO TramosHorarios(HoraInicio, HoraFin)
+VALUES('08:00','19:00');
 /* AÑADIR PROXIMAMENTE CONFORME TODO ESTE HECHO 
 CREATE TABLE Descuentos ( 
     IdDescuento INT IDENTITY(1,1) PRIMARY KEY,
