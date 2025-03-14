@@ -56,9 +56,6 @@ namespace CoWorking.Controllers
                 return NotFound();
             }
             existingOpinionesAsiento.Opinion = updatedOpinionesAsientos.Opinion;
-            existingOpinionesAsiento.FechaOpinion = updatedOpinionesAsientos.FechaOpinion;
-            existingOpinionesAsiento.IdPuestoTrabajo = updatedOpinionesAsientos.IdPuestoTrabajo;
-            existingOpinionesAsiento.IdUsuario = updatedOpinionesAsientos.IdUsuario;
 
 
             await _serviceOpinionesAsientos.UpdateAsync(existingOpinionesAsiento);

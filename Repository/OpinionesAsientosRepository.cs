@@ -102,15 +102,12 @@ namespace CoWorking.Repositories
             {
                 await connection.OpenAsync();
 
-                string query = "UPDATE OpinionesAsientos SET Opinion = @Opinion, FechaOpinion = @FechaOpinion, IdPuestoTrabajo = @IdPuestoTrabajo, IdUsuario = @IdUsuario WHERE IdOpinionAsiento = @IdOpinionAsiento";
+                string query = "UPDATE OpinionesAsientos SET Opinion = @Opinion WHERE IdOpinionAsiento = @IdOpinionAsiento";
 
                 using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@IdOpinionAsiento", opinioneasiento.IdOpinionAsiento);
                     command.Parameters.AddWithValue("@Opinion", opinioneasiento.Opinion);
-                    command.Parameters.AddWithValue("@FechaOpinion", opinioneasiento.FechaOpinion);
-                    command.Parameters.AddWithValue("@IdPuestoTrabajo", opinioneasiento.IdPuestoTrabajo);
-                    command.Parameters.AddWithValue("@IdUsuario", opinioneasiento.IdUsuario);
                     await command.ExecuteNonQueryAsync();
                 }
             }
